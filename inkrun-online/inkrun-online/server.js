@@ -9,6 +9,7 @@ const { WebSocketServer } = require('ws');
 
 const PORT = process.env.PORT || 3000;
 const MAX_PER_ROOM = 8;
+const ABILITY_KINDS = new Set(['flash', 'smoke', 'poof']);
 const COLORS = [0xff5c5c, 0x5cc8ff, 0x8cff5c, 0xffb35c, 0xd67cff, 0xffe14a, 0x5cffd0, 0xff8cd9];
 const INDEX = path.join(__dirname, 'public', 'index.html');
 
@@ -46,7 +47,7 @@ function broadcast(room, obj, exceptId) {
     if (p.id !== exceptId && p.ws.readyState === 1) p.ws.send(s);
   }
 }
-const rosterOf = room => [...room.players.values()].map(p => ({ id: p.id, name: p.name, color: p.color, kills: p.kills, deaths: p.deaths }));
+const rosterOf = room => [...room.players.values()].map(p => ({ id: p.id, name: p.name, color: p.color, kills: p.kills, deaths: p.deaths, a: p.agent }));
 
 function join(ws, m) {
   const roomName = cleanRoom(m.room) || 'main';
@@ -60,12 +61,12 @@ function join(ws, m) {
   const used = new Set([...room.players.values()].map(p => p.color));
   const color = COLORS.find(c => !used.has(c)) ?? COLORS[0];
 
-  const p = { id: nextId++, ws, name, color, room, kills: 0, deaths: 0, dead: false, state: null };
-  const others = [...room.players.values()].map(o => ({ id: o.id, name: o.name, color: o.color, s: o.state }));
+  const p = { id: nextId++, ws, name, color, room, kills: 0, deaths: 0, dead: false, state: null, agent: (m.a | 0) & 3, lastChat: 0 };
+  const others = [...room.players.values()].map(o => ({ id: o.id, name: o.name, color: o.color, a: o.agent, s: o.state }));
   room.players.set(p.id, p);
 
   send(ws, { t: 'welcome', id: p.id, room: room.name, age: Date.now() - room.created, players: others, roster: rosterOf(room) });
-  broadcast(room, { t: 'join', id: p.id, name, color }, p.id);
+  broadcast(room, { t: 'join', id: p.id, name, color, a: p.agent }, p.id);
   broadcast(room, { t: 'roster', list: rosterOf(room) });
   console.log(`[${room.name}] + ${name} (${room.players.size})`);
   return p;
@@ -85,7 +86,7 @@ function onMessage(p, m) {
   switch (m.t) {
     case 's': { // trạng thái người chơi (~20 lần/giây)
       if (!num3(m.p) || !num3(m.v)) return;
-      const s = { p: m.p.map(r2), v: m.v.map(r2), y: isNum(m.y) ? r2(m.y) : 0, pi: isNum(m.pi) ? r2(m.pi) : 0, w: (m.w | 0) & 3, sl: m.sl ? 1 : 0, d: m.d ? 1 : 0 };
+      const s = { p: m.p.map(r2), v: m.v.map(r2), y: isNum(m.y) ? r2(m.y) : 0, pi: isNum(m.pi) ? r2(m.pi) : 0, w: (m.w | 0) & 7, sl: m.sl ? 1 : 0, d: m.d ? 1 : 0 };
       if (!s.d) p.dead = false;
       p.state = s;
       broadcast(room, Object.assign({ t: 's', id: p.id }, s), p.id);
@@ -93,13 +94,13 @@ function onMessage(p, m) {
     }
     case 'f': { // bắn (chỉ để vẽ tia đạn + âm thanh cho người khác)
       if (!Array.isArray(m.e) || m.e.length > 27 || m.e.length % 3 || !m.e.every(isNum)) return;
-      broadcast(room, { t: 'f', id: p.id, w: (m.w | 0) & 3, e: m.e.map(r2) }, p.id);
+      broadcast(room, { t: 'f', id: p.id, w: (m.w | 0) & 7, e: m.e.map(r2) }, p.id);
       break;
     }
     case 'h': { // trúng đạn -> chuyển cho nạn nhân
       const target = room.players.get(m.to);
       if (!target || target === p || !isNum(m.dmg)) return;
-      send(target.ws, { t: 'h', from: p.id, dmg: Math.min(250, Math.max(0, m.dmg)), head: m.head ? 1 : 0, w: (m.w | 0) & 3 });
+      send(target.ws, { t: 'h', from: p.id, dmg: Math.min(250, Math.max(0, m.dmg)), head: m.head ? 1 : 0, w: (m.w | 0) & 7 });
       break;
     }
     case 'd': { // mình vừa chết
@@ -108,8 +109,28 @@ function onMessage(p, m) {
       const killer = room.players.get(m.by);
       let killerId = null;
       if (killer && killer !== p) { killer.kills++; killerId = killer.id; }
-      broadcast(room, { t: 'kill', killer: killerId, victim: p.id, w: (m.w | 0) & 3, head: m.head ? 1 : 0 });
+      broadcast(room, { t: 'kill', killer: killerId, victim: p.id, w: (m.w | 0) & 7, head: m.head ? 1 : 0 });
       broadcast(room, { t: 'roster', list: rosterOf(room) });
+      break;
+    }
+    case 'agent': { // đổi nhân vật (áp dụng khi hồi sinh)
+      p.agent = (m.a | 0) & 3;
+      broadcast(room, { t: 'agent', id: p.id, a: p.agent }, p.id);
+      broadcast(room, { t: 'roster', list: rosterOf(room) });
+      break;
+    }
+    case 'a': { // hiệu ứng kỹ năng (khói, chớp sáng, dịch chuyển) để người khác thấy
+      if (!ABILITY_KINDS.has(m.k) || !num3(m.p)) return;
+      broadcast(room, { t: 'a', id: p.id, k: m.k, p: m.p.map(r2) }, p.id);
+      break;
+    }
+    case 'c': { // chat
+      const now = Date.now();
+      if (now - p.lastChat < 600) return; // chống spam
+      const text = String(m.m || '').replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, 120);
+      if (!text) return;
+      p.lastChat = now;
+      broadcast(room, { t: 'c', id: p.id, name: p.name, color: p.color, m: text });
       break;
     }
     case 'p': send(p.ws, { t: 'p', ts: m.ts }); break; // ping
