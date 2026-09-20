@@ -114,12 +114,11 @@
   
   .tb{position:absolute;pointer-events:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,25,35,0.88);border:1px solid var(--val-border);color:#fff;font-weight:800;border-radius:50%;box-shadow:0 4px 14px rgba(0,0,0,0.6);transition:transform 0.08s, background 0.1s}
   .tb:active,.tb.down{transform:scale(0.9);background:rgba(255,70,85,0.7);border-color:var(--val-red)}
-  #tfire{right:28px;bottom:95px;width:80px;height:80px;background:rgba(255,70,85,0.85);border-color:var(--val-red);box-shadow:0 0 20px rgba(255,70,85,0.6);font-size:18px}
-  #tjump{right:120px;bottom:85px;width:60px;height:60px;font-size:13px}
-  #tslide{right:190px;bottom:75px;width:56px;height:56px;font-size:12px}
-  #tdash{right:120px;bottom:155px;width:54px;height:54px;font-size:12px;color:var(--val-cyan);border-color:var(--val-cyan)}
-  #taim{right:28px;bottom:190px;width:54px;height:54px;font-size:12px}
-  #treload{right:28px;bottom:25px;width:52px;height:52px;font-size:11px}
+  #tfire{right:24px;bottom:100px;width:82px;height:82px;background:rgba(255,70,85,0.88);border-color:var(--val-red);box-shadow:0 0 22px rgba(255,70,85,0.6);font-size:18px}
+  #tjump{right:116px;bottom:95px;width:64px;height:64px;font-size:14px;background:rgba(0,245,212,0.25);border-color:var(--val-cyan);color:#fff}
+  #tcrouch{right:188px;bottom:85px;width:60px;height:60px;font-size:13px;background:rgba(255,184,0,0.22);border-color:var(--val-gold);color:#fff}
+  #taim{right:24px;bottom:195px;width:56px;height:56px;font-size:13px}
+  #treload{right:24px;bottom:24px;width:54px;height:54px;font-size:12px}
   
   /* Mobile Skill Buttons */
   #t-skill-e{left:52%;bottom:25px;width:56px;height:56px;border-radius:10px;border-color:var(--val-cyan);font-size:12px;color:var(--val-cyan)}
@@ -264,10 +263,9 @@
   <div id="tjoy"></div>
   <div id="tlook"></div>
   <div id="joybase"><div id="joyknob"></div></div>
-  <div class="tb" id="tfire">FIRE</div>
+  <div class="tb" id="tfire">BẮN</div>
   <div class="tb" id="tjump">NHẢY</div>
-  <div class="tb" id="tslide">TRƯỢT</div>
-  <div class="tb" id="tdash">DASH</div>
+  <div class="tb" id="tcrouch">NGỒI</div>
   <div class="tb" id="taim">NGẮM</div>
   <div class="tb" id="treload">NẠP</div>
   <div class="tb" id="t-skill-e">E</div>
@@ -763,6 +761,8 @@ const P = {
   speed: 0,
   onGround: false,
   sliding: false,
+  crouching: false,
+  crouchT: 0,
   zoom: false,
   wi: 0,
   ammo: [25, 30, 6, 5, 30],
@@ -786,6 +786,7 @@ window.addEventListener('keydown', e => {
   if(e.code === 'Digit4') switchWeapon(3);
   if(e.code === 'Digit5') switchWeapon(4);
   if(e.code === 'KeyR') reloadWeapon();
+  if(e.code === 'ControlLeft' || e.code === 'KeyC') { P.crouching = true; }
   if(e.code === 'KeyE') useSkillE();
   if(e.code === 'KeyQ') useSkillQ();
   if(e.code === 'Enter') toggleChat(true);
@@ -799,6 +800,7 @@ window.addEventListener('keydown', e => {
 window.addEventListener('keyup', e => {
   keys[e.code] = false;
   if(e.code === 'Tab') document.getElementById('sb').style.display = 'none';
+  if(e.code === 'ControlLeft' || e.code === 'KeyC') { P.crouching = false; }
 });
 
 window.addEventListener('mousedown', e => {
@@ -1311,44 +1313,58 @@ function movePlayer(dt){
     }
   }
 
+  // Smooth crouch camera height transition
+  const targetCrouch = P.crouching ? 1 : 0;
+  P.crouchT += (targetCrouch - P.crouchT) * Math.min(1, dt * 14);
+
   // Input Movement Direction
   const move = V3();
   if(keys['KeyW']) move.z -= 1;
   if(keys['KeyS']) move.z += 1;
   if(keys['KeyA']) move.x -= 1;
   if(keys['KeyD']) move.x += 1;
+  const isMoving = (move.lengthSq() > 0.01);
   move.normalize();
 
   const forward = V3(-Math.sin(P.yaw), 0, -Math.cos(P.yaw));
   const right = V3(Math.cos(P.yaw), 0, -Math.sin(P.yaw));
   const wishDir = forward.multiplyScalar(-move.z).add(right.multiplyScalar(move.x)).normalize();
 
-  const accel = P.onGround ? 65 : 18;
-  const maxSpeed = keys['ShiftLeft'] ? 13 : 9.5;
-  P.vel.x += wishDir.x * accel * dt;
-  P.vel.z += wishDir.z * accel * dt;
+  // Speed: Normal walk = 7.5, Shift slow walk = 4.2, Crouch walk = 3.2
+  let targetSpeed = 7.5;
+  if(P.crouching) targetSpeed = 3.2;
+  else if(keys['ShiftLeft']) targetSpeed = 4.2;
 
-  // Friction & Jump
   if(P.onGround){
-    const speed = Math.hypot(P.vel.x, P.vel.z);
-    if(speed > 0){
-      const drop = speed * 8.0 * dt;
-      const factor = Math.max(0, speed - drop) / speed;
-      P.vel.x *= factor;
-      P.vel.z *= factor;
+    if(isMoving){
+      // Instant responsive acceleration to target speed
+      const accelRate = 22;
+      P.vel.x += (wishDir.x * targetSpeed - P.vel.x) * Math.min(1, dt * accelRate);
+      P.vel.z += (wishDir.z * targetSpeed - P.vel.z) * Math.min(1, dt * accelRate);
+    } else {
+      // INSTANT STOP - Zero friction drift / zero ice skating!
+      const stopRate = 28;
+      P.vel.x += (0 - P.vel.x) * Math.min(1, dt * stopRate);
+      P.vel.z += (0 - P.vel.z) * Math.min(1, dt * stopRate);
+      if(Math.hypot(P.vel.x, P.vel.z) < 0.05){ P.vel.x = 0; P.vel.z = 0; }
     }
-    if(keys['Space']){
+
+    // Jump
+    if(keys['Space'] && !P.crouching){
       P.vel.y = 8.5;
       P.onGround = false;
       sfx('jump');
     }
   } else {
-    // Jett Passive: Glide
+    // Air control & Jett passive glide
+    const airAccel = 12;
+    P.vel.x += wishDir.x * airAccel * dt;
+    P.vel.z += wishDir.z * airAccel * dt;
     const gravity = (myAgent === 'jett' && keys['Space'] && P.vel.y < 0) ? 9 : 24;
     P.vel.y -= gravity * dt;
   }
 
-  // SUB-STEPPING: Divide frame into micro-steps to completely prevent clipping through walls or out of map!
+  // SUB-STEPPING: Prevent any clipping through walls
   const speedTotal = Math.hypot(P.vel.x, P.vel.y, P.vel.z);
   const steps = Math.min(8, Math.max(2, Math.ceil(speedTotal * dt / 0.15)));
   const subDt = dt / steps;
@@ -1363,14 +1379,14 @@ function movePlayer(dt){
     resolveCollision('y');
   }
 
-  // Absolute Boundary Clamping: Double-safety so player CAN NEVER leave the arena!
+  // Double-safety Boundary Clamping
   if(P.pos.x < -32.5) { P.pos.x = -32.5; P.vel.x = 0; }
   if(P.pos.x > 32.5) { P.pos.x = 32.5; P.vel.x = 0; }
   if(P.pos.z < -37.5) { P.pos.z = -37.5; P.vel.z = 0; }
   if(P.pos.z > 37.5) { P.pos.z = 37.5; P.vel.z = 0; }
   if(P.pos.y > 21.0) { P.pos.y = 21.0; P.vel.y = 0; }
 
-  // Void Fall Recovery: If ever below ground, instantly respawn safely!
+  // Void Fall Recovery
   if(P.pos.y < -3.0){
     P.pos.set(0, 1.0, -30);
     P.vel.set(0, 0, 0);
@@ -1379,9 +1395,8 @@ function movePlayer(dt){
   P.speed = Math.hypot(P.vel.x, P.vel.z);
   updateVitalsUI();
 }
-
 function resolveCollision(axis){
-  const pr = 0.42, ph = 1.75;
+  const pr = 0.42, ph = 1.75 - P.crouchT * 0.65;
   for(let i=0; i<solids.length; i++){
     const b = solids[i];
     if(P.pos.x + pr > b.min.x && P.pos.x - pr < b.max.x &&
@@ -1587,7 +1602,7 @@ function gameLoop(now){
   movePlayer(dt);
 
   // Update Camera
-  camera.position.set(P.pos.x, P.pos.y + 1.62, P.pos.z);
+  camera.position.set(P.pos.x, P.pos.y + (1.62 - P.crouchT * 0.65), P.pos.z);
   camera.rotation.order = 'YXZ';
   camera.rotation.y = P.yaw;
   camera.rotation.x = P.pitch;
