@@ -144,6 +144,7 @@
   body.touch.playing #rotate{display:none}
   @media (orientation:portrait){ body.touch.playing #rotate{display:flex} }
   /* agents + abilities + chat */
+  .row input[type=checkbox]{width:20px;height:20px;accent-color:#ff5d5d;vertical-align:middle}
   .card{max-height:96vh;overflow-y:auto}
   #agents{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
   .ag{border:3px solid #111;background:#fff;padding:4px 6px;cursor:pointer;box-shadow:3px 3px 0 #111;font-family:'Segoe UI',Arial,sans-serif;letter-spacing:0;font-size:11px;line-height:1.25;text-align:left;user-select:none}
@@ -242,6 +243,7 @@
     </div>
     <div class="row">
       <label>Độ nhạy <input id="sens" type="range" min="0.3" max="3" step="0.1" value="1"></label>
+      <label>Đảo trục Y <input type="checkbox" id="invy"></label>
       <label>FOV <input id="fov" type="range" min="80" max="120" step="1" value="100"></label>
     </div>
     <div class="btn" id="playbtn">VÀO TRẬN</div>
@@ -470,7 +472,12 @@ vmGroups[0].visible=true;
 // ============================================================ PLAYER
 const P={body:makeBody(),yaw:0,pitch:0,hp:100,dead:false,eyeH:1.62,sliding:false,slideHeld:false,jumpHeld:false,dash:2,dashCd:0,dashTimer:0,wi:0,lastWi:1,wst:WEAPONS.map(w=>({ammo:w.mag,reloading:false,reloadT:0,nextFire:0})),kills:0,deaths:0,streak:0,best:0,lastHit:99,respawnT:0,zoom:false,recoilP:0,recoilY:0,shake:0,fovPunch:0,vmKick:0,vmRot:0,bobT:0,switchT:0,flashT:0,killTimes:[],strafe:0,roll:0,agent:0,cd:[0,0],shield:0,healT:0,blind:0};
 const keys={}; const mouse={down:false,rdown:false,fired:false,dx:0,dy:0};
-let sens=1,baseFov=100,running=false,time=0,hitA=0,vignA=0,dmgA=0,swayX=0,swayY=0;
+let invY=false,sens=1,baseFov=100,running=false,time=0,hitA=0,vignA=0,dmgA=0,swayX=0,swayY=0;
+// hướng ngắm = đúng góc đang nhìn (cùng công thức với camera YXZ) -> đạn luôn đi theo tâm ngắm
+function aimAngles(){ return [P.yaw+P.recoilY,P.pitch+P.recoilP]; }
+function aimDir(out){ const [y,p]=aimAngles(),cp=Math.cos(p); return out.set(-Math.sin(y)*cp,Math.sin(p),-Math.cos(y)*cp); }
+function aimRight(out){ const [y]=aimAngles(); return out.set(Math.cos(y),0,-Math.sin(y)); }
+function aimUp(out){ const [y,p]=aimAngles(),sp=Math.sin(p); return out.set(sp*Math.sin(y),Math.cos(p),sp*Math.cos(y)); }
 function playerEye(){ return V3(P.body.pos.x,P.body.pos.y+P.eyeH,P.body.pos.z); }
 function hspeed(){ return Math.hypot(P.body.vel.x,P.body.vel.z); }
 function doJump(){ const b=P.body; if(P.sliding){ endSlide(true); b.vel.x*=1.06; b.vel.z*=1.06; } b.vel.y=JUMP_VEL; b.onGround=false; b.groundTime=1; sfx('jump',0.6); }
@@ -503,7 +510,7 @@ function respawnPlayer(){ let best=null,bd=-1; for(const s of SPAWNS){ let md=1e
 function startReload(){ const w=WEAPONS[P.wi],st=P.wst[P.wi]; if(st.reloading||st.ammo===w.mag)return; st.reloading=true; st.reloadT=w.reload; sfx('reload'); showMsg('RELOADING…'); }
 function switchWeapon(i){ if(i===P.wi||P.dead)return; P.wst[P.wi].reloading=false; P.lastWi=P.wi; P.wi=i; P.switchT=0.3; vmGroups.forEach((g,k)=>g.visible=k===i); sfx('switch'); const w=WEAPONS[i]; document.getElementById('wname').textContent=w.name; [...document.getElementById('twep').children].forEach((el,k)=>el.classList.toggle('on',k===i)); if(TOUCH){ mouse.rdown=false; const ab=document.getElementById('taim'); ab.classList.remove('on'); ab.style.display=w.zoom?'flex':'none'; } [...document.getElementById('wlist').children].forEach((el,k)=>el.classList.toggle('on',k===i)); }
 function curSpread(w){ let s=(P.zoom&&w.zoom)?w.zoomSpread:w.spread; s+=w.moveSpread*clamp(hspeed()/12,0,1.5); if(!P.body.onGround)s+=w.moveSpread*0.8; if(P.sliding)s*=0.7; return s; }
-function fireWeapon(w,st){ st.ammo--; st.nextFire=60/w.rpm; const origin=playerEye(); const base=V3(); camera.getWorldDirection(base); const right=V3(1,0,0).applyQuaternion(camera.quaternion),up=V3(0,1,0).applyQuaternion(camera.quaternion); const muzzle=origin.clone().addScaledVector(right,0.28).addScaledVector(up,-0.2).addScaledVector(base,0.7); const sp=curSpread(w)*DEG; let hits=0,head=false; const dealt=new Map(),ends=[];
+function fireWeapon(w,st){ st.ammo--; st.nextFire=60/w.rpm; const origin=playerEye(); const base=aimDir(V3()),right=aimRight(V3()),up=aimUp(V3()); const muzzle=origin.clone().addScaledVector(right,0.28).addScaledVector(up,-0.2).addScaledVector(base,0.7); const sp=curSpread(w)*DEG; let hits=0,head=false; const dealt=new Map(),ends=[];
   for(let i=0;i<w.pellets;i++){ const dir=spreadDir(base,sp); let t=250; const hw=rayWorld(origin,dir,t); if(hw)t=hw.t; let hb=null,hh=false; for(const r of remotes.values()){ if(r.dead||!r.init)continue; const rr=rayHumanoid(origin,dir,r.body.pos,1.62*(r.sl?0.62:1),t); if(rr){t=rr.t;hb=r;hh=rr.head;} } const hp=origin.clone().addScaledVector(dir,t); ends.push(Math.round(hp.x*100)/100,Math.round(hp.y*100)/100,Math.round(hp.z*100)/100); tracer(muzzle,hp,w.tracer,w.tracerW,w.tracerLife);
     if(hb){ hits++; if(hh)head=true; const dm=w.dmg*(hh?w.headMult:1)*PVP_DMG*(w.fall&&t>w.fall[0]?w.fall[1]:1); hitFeedback(hb,dm,hp,hh,w); const e=dealt.get(hb.id)||{dmg:0,head:0}; e.dmg+=dm; if(hh)e.head=1; dealt.set(hb.id,e); } else if(hw) impact(hp,hw.box,dir); }
   for(const [id,e] of dealt) netSend({t:'h',to:id,dmg:Math.round(e.dmg),head:e.head,w:P.wi});
@@ -647,9 +654,9 @@ function setRemoteAgent(r,a){ a=((a|0)%AGENTS.length+AGENTS.length)%AGENTS.lengt
 
 // kỹ năng
 const smokes=[],fxQueue=[]; let smokeGeo=null; const q2=v=>Math.round(v*100)/100;
-function aimPoint(maxD){ const o=playerEye(),d=V3(); camera.getWorldDirection(d); const h=rayWorld(o,d,maxD); const t=h?Math.max(0.5,h.t-0.4):maxD; return o.clone().addScaledVector(d,t); }
+function aimPoint(maxD){ const o=playerEye(),d=aimDir(V3()); const h=rayWorld(o,d,maxD); const t=h?Math.max(0.5,h.t-0.4):maxD; return o.clone().addScaledVector(d,t); }
 function makeSmoke(pos){ if(!smokeGeo)smokeGeo=new T.SphereGeometry(3.4,18,14); const m=new T.Mesh(smokeGeo,new T.MeshBasicMaterial({color:0xdfe3ea,transparent:true,opacity:0.97,side:T.DoubleSide})); m.position.copy(pos); m.scale.setScalar(0.3); scene.add(m); smokes.push({m,t0:time,life:10}); while(smokes.length>6){ const o=smokes.shift(); scene.remove(o.m); o.m.material.dispose(); } }
-function applyFlash(pos){ if(P.dead)return; const eye=playerEye(); const d=pos.clone().sub(eye); const dist=d.length(); if(dist>32||dist<0.01)return; d.divideScalar(dist); if(rayWorld(eye,d,dist))return; const f=V3(); camera.getWorldDirection(f); const dot=f.x*d.x+f.y*d.y+f.z*d.z; const facing=clamp((dot+0.3)/1.3,0,1); const dur=3.2*facing*(1-dist/40); if(dur>0.15)P.blind=Math.max(P.blind,dur+0.6); }
+function applyFlash(pos){ if(P.dead)return; const eye=playerEye(); const d=pos.clone().sub(eye); const dist=d.length(); if(dist>32||dist<0.01)return; d.divideScalar(dist); if(rayWorld(eye,d,dist))return; const f=aimDir(V3()); const dot=f.x*d.x+f.y*d.y+f.z*d.z; const facing=clamp((dot+0.3)/1.3,0,1); const dur=3.2*facing*(1-dist/40); if(dur>0.15)P.blind=Math.max(P.blind,dur+0.6); }
 function abilityFx(k,p,mine){ const pos=V3(p[0],p[1],p[2]); const near=clamp(1-pos.distanceTo(camera.position)/60,0.1,1);
   if(k==='flash'){ spawnPop(pos,flashTex,0.9,{life:0.55,vx:0,vy:0,vz:0,grav:0}); fxQueue.push({t:time+0.55,fn:()=>{ burst(pos,0xffffff,16,9); spawnPop(pos,flashTex,3.2,{life:0.25,vx:0,vy:0,vz:0,grav:0,depthTest:false}); sfx('flashpop',near); if(!mine)applyFlash(pos); }}); }
   else if(k==='smoke'){ makeSmoke(pos); sfx('smoke',near); }
@@ -703,7 +710,7 @@ function exitTouch(){ closeChat(); running=false; overlay.style.display='flex'; 
 function touchInit(){
   const base=$('joybase'),knob=$('joyknob'),R=55,opt={passive:false};
   const setKeys=(vx,vy)=>{ keys.KeyD=vx>0.3; keys.KeyA=vx<-0.3; keys.KeyS=vy>0.3; keys.KeyW=vy<-0.3; };
-  const look=(dx,dy)=>{ const s=0.0045*sens*(P.zoom?0.4:1); P.yaw-=dx*s; P.pitch=clamp(P.pitch-dy*s,-89*DEG,89*DEG); mouse.dx+=dx; mouse.dy+=dy; };
+  const look=(dx,dy)=>{ const s=0.0045*sens*(P.zoom?0.4:1); P.yaw-=dx*s; P.pitch=clamp(P.pitch-dy*s*(invY?-1:1),-89*DEG,89*DEG); mouse.dx+=dx; mouse.dy+=dy; };
   // cần chạy (nửa trái màn hình): chạm ở đâu, cần hiện ở đó
   const zj=$('tjoy');
   zj.addEventListener('touchstart',e=>{ e.preventDefault(); if(!running||joyId!==null)return; const t=e.changedTouches[0]; joyId=t.identifier; jx0=t.clientX; jy0=t.clientY; base.style.display='block'; base.style.left=jx0+'px'; base.style.top=jy0+'px'; knob.style.transform='translate(-50%,-50%)'; },opt);
@@ -736,7 +743,7 @@ function touchInit(){
   overlay.addEventListener('touchmove',e=>{ if(!e.target.closest('.card'))e.preventDefault(); },opt);
 }
 
-document.addEventListener('mousemove',e=>{ if(!running||TOUCH||chatOpen)return; const s=0.0022*sens*(P.zoom?0.4:1); P.yaw-=e.movementX*s; P.pitch-=e.movementY*s; P.pitch=clamp(P.pitch,-89*DEG,89*DEG); mouse.dx+=e.movementX; mouse.dy+=e.movementY; });
+document.addEventListener('mousemove',e=>{ if(!running||TOUCH||chatOpen)return; const s=0.0022*sens*(P.zoom?0.4:1); P.yaw-=e.movementX*s; P.pitch-=e.movementY*s*(invY?-1:1); P.pitch=clamp(P.pitch,-89*DEG,89*DEG); mouse.dx+=e.movementX; mouse.dy+=e.movementY; });
 document.addEventListener('mousedown',e=>{ if(!running||TOUCH||chatOpen)return; if(e.button===0){ mouse.down=true; mouse.fired=false; } if(e.button===2)mouse.rdown=true; });
 document.addEventListener('mouseup',e=>{ if(TOUCH)return; if(e.button===0)mouse.down=false; if(e.button===2)mouse.rdown=false; });
 document.addEventListener('contextmenu',e=>e.preventDefault());
@@ -750,7 +757,7 @@ window.addEventListener('resize',()=>{ if(!chatOpen)doResize(); });
 
 // ============================================================ START & LOOP
 P.body.pos.set(0,0.05,8); P.yaw=Math.PI;
-(function initLobby(){ let n=''; try{ n=localStorage.getItem('inkrun_name')||''; }catch(e){} $('pname').value=n; try{ selAgent=(+localStorage.getItem('inkrun_agent')||0)%AGENTS.length; }catch(e){} buildAgentPicker(); updateAbilUI();
+(function initLobby(){ let n=''; try{ n=localStorage.getItem('inkrun_name')||''; }catch(e){} $('pname').value=n; try{ invY=localStorage.getItem('inkrun_invy')==='1'; }catch(e){} $('invy').checked=invY; $('invy').addEventListener('change',e=>{ invY=e.target.checked; try{ localStorage.setItem('inkrun_invy',invY?'1':'0'); }catch(_){} }); try{ selAgent=(+localStorage.getItem('inkrun_agent')||0)%AGENTS.length; }catch(e){} buildAgentPicker(); updateAbilUI();
   $('chatin').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); sendChat(); } else if(e.key==='Escape'){ e.preventDefault(); closeChat(); } });
   $('chatsend').addEventListener('pointerdown',e=>e.preventDefault()); $('chatsend').addEventListener('click',sendChat);
   $('chatin').addEventListener('blur',()=>{ setTimeout(()=>{ if(chatOpen&&document.activeElement!==$('chatin'))closeChat(); },200); });
