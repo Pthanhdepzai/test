@@ -179,6 +179,10 @@
 
   #pop{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%) scale(0.8);opacity:0;font-family:'Teko',sans-serif;font-size:64px;letter-spacing:4px;color:var(--val-red);pointer-events:none;transition:all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28)}
   #pop.go{opacity:1;transform:translate(-50%,-50%) scale(1.1)}
+  #invite-box{display:none;background:rgba(0,245,212,0.1);border:1px dashed var(--val-cyan);padding:10px 14px;border-radius:6px;margin-top:6px;align-items:center;justify-content:space-between;gap:10px}
+  #invitelink{font-family:'Chakra Petch',monospace;font-size:13px;color:var(--val-cyan);word-break:break-all;user-select:all;-webkit-user-select:all}
+  #copybtn{background:var(--val-cyan);color:#0f1923;border:none;padding:6px 14px;font-family:'Rajdhani',sans-serif;font-weight:800;font-size:13px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:all 0.15s}
+  #copybtn:hover{background:#fff}
 </style>
 </head>
 <body>
@@ -352,6 +356,10 @@
       <b>Phím PC:</b> WASD di chuyển • Chuột trái bắn • Chuột phải ngắm • <b>E</b> & <b>Q</b> dùng kỹ năng • <b>1-5</b> đổi súng (Vandal, Phantom, Sheriff, Op, Spectre) • <b>Enter</b> mở chat • <b>Tab</b> xem K/D.
     </div>
 
+    <div id="invite-box">
+      <span id="invitelink">https://.../?room=main</span>
+      <button id="copybtn">COPY LINK MỜI BẠN</button>
+    </div>
     <button class="play-btn" id="playbtn">VÀO TRẬN ĐẤU</button>
     <div id="netstatus" style="font-size:12px;color:#aaa;text-align:center"></div>
   </div>
@@ -427,6 +435,11 @@ const AGENTS = {
 let myAgent = localStorage.getItem('inkrun_agent') || 'jett';
 let myName = localStorage.getItem('inkrun_name') || ('Agent_' + Math.floor(Math.random()*900+100));
 let roomName = 'main';
+// Auto-detect ?room= or ?r= from URL params so clicking friend's link connects directly!
+const urlParams = new URLSearchParams(window.location.search);
+if(urlParams.has('room')) roomName = urlParams.get('room').trim().toLowerCase().slice(0, 16);
+else if(urlParams.has('r')) roomName = urlParams.get('r').trim().toLowerCase().slice(0, 16);
+
 let cdE = 0, cdQ = 0;
 
 // ============================================================ THREE.JS SCENE SETUP
@@ -1159,6 +1172,10 @@ function handleNetMessage(m){
       myId = m.id;
       joined = true;
       document.getElementById('room-banner').textContent = 'PHÒNG: ' + m.room.toUpperCase();
+      roomName = m.room;
+      document.getElementById('proom').value = m.room;
+      updateBrowserUrl(m.room);
+      updateInviteLink();
       clearRemotes();
       for(const p of m.players){
         if(p.id === myId) continue;
@@ -1562,9 +1579,21 @@ twepBtns.forEach((btn, idx) => {
 
 // ============================================================ LOBBY & START
 const overlay = document.getElementById('overlay');
+function updateInviteLink(){
+  const curRoom = (document.getElementById('proom').value.trim() || roomName || 'main').toLowerCase();
+  const fullUrl = window.location.origin + window.location.pathname + '?room=' + encodeURIComponent(curRoom);
+  const linkSpan = document.getElementById('invitelink');
+  const box = document.getElementById('invite-box');
+  if(linkSpan && box){
+    linkSpan.textContent = fullUrl;
+    box.style.display = 'flex';
+  }
+}
+
 function toggleMenu(){
   if(overlay.style.display === 'none'){
     overlay.style.display = 'flex';
+    updateInviteLink();
     if(document.exitPointerLock) document.exitPointerLock();
   } else {
     overlay.style.display = 'none';
@@ -1602,7 +1631,45 @@ function applyAgentHUD(){
 }
 applyAgentHUD();
 
+// Set default room in input if provided by URL
+if(roomName) document.getElementById('proom').value = roomName;
+document.getElementById('proom').addEventListener('input', () => updateInviteLink());
+
+// Copy Invite Link Button
+const copyBtn = document.getElementById('copybtn');
+if(copyBtn){
+  copyBtn.addEventListener('click', () => {
+    const linkText = document.getElementById('invitelink').textContent;
+    navigator.clipboard.writeText(linkText).then(() => {
+      copyBtn.textContent = 'ĐÃ COPY LINK! ✓';
+      copyBtn.style.background = '#00f5a0';
+      setTimeout(() => {
+        copyBtn.textContent = 'COPY LINK MỜI BẠN';
+        copyBtn.style.background = 'var(--val-cyan)';
+      }, 2000);
+    }).catch(() => {
+      // Fallback if clipboard API restricted
+      prompt('Copy link phòng của bạn gửi cho bạn bè:', linkText);
+    });
+  });
+}
+
+// When successfully connected, also update URL without reloading page
+function updateBrowserUrl(rName){
+  if(window.history && window.history.replaceState){
+    const newUrl = window.location.origin + window.location.pathname + '?room=' + encodeURIComponent(rName);
+    window.history.replaceState(null, '', newUrl);
+  }
+}
+
 document.getElementById('playbtn').addEventListener('click', () => {
+  initAudio();
+  myName = document.getElementById('pname').value.trim() || 'Agent';
+  roomName = (document.getElementById('proom').value.trim() || 'main').toLowerCase();
+  localStorage.setItem('inkrun_name', myName);
+  updateBrowserUrl(roomName);
+  updateInviteLink();
+
   initAudio();
   myName = document.getElementById('pname').value.trim() || 'Agent';
   roomName = document.getElementById('proom').value.trim() || 'main';
