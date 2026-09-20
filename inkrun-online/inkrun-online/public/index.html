@@ -106,31 +106,37 @@
   #chat-input{width:100%;background:rgba(15,25,35,0.95);border:1px solid var(--val-cyan);color:#fff;padding:8px 12px;font-family:inherit;font-size:13px;border-radius:3px;outline:none}
   
   /* Mobile Controls (Always active on touch devices) */
-  #touch{position:fixed;inset:0;z-index:8;pointer-events:none}
-  #tjoy{position:absolute;left:0;top:0;width:50%;height:100%;pointer-events:auto}
-  #tlook{position:absolute;right:0;top:0;width:50%;height:100%;pointer-events:auto}
-  #joybase{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(0,245,212,0.5);background:rgba(0,0,0,0.3);display:none;pointer-events:none}
-  #joyknob{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:var(--val-cyan);box-shadow:0 0 16px var(--val-cyan)}
+  #touch{position:fixed;inset:0;z-index:15;pointer-events:none}
+  #tjoy{position:absolute;left:0;top:0;width:45%;height:100%;pointer-events:auto}
+  #tlook{position:absolute;right:0;top:0;width:55%;height:100%;pointer-events:auto}
+  #joybase{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(0,245,212,0.6);background:rgba(0,0,0,0.35);display:none;pointer-events:none}
+  #joyknob{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:var(--val-cyan);box-shadow:0 0 18px var(--val-cyan)}
   
-  .tb{position:absolute;pointer-events:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,25,35,0.88);border:1px solid var(--val-border);color:#fff;font-weight:800;border-radius:50%;box-shadow:0 4px 14px rgba(0,0,0,0.6);transition:transform 0.08s, background 0.1s}
-  .tb:active,.tb.down{transform:scale(0.9);background:rgba(255,70,85,0.7);border-color:var(--val-red)}
-  #tfire{right:24px;bottom:100px;width:82px;height:82px;background:rgba(255,70,85,0.88);border-color:var(--val-red);box-shadow:0 0 22px rgba(255,70,85,0.6);font-size:18px}
-  #tjump{right:116px;bottom:95px;width:64px;height:64px;font-size:14px;background:rgba(0,245,212,0.25);border-color:var(--val-cyan);color:#fff}
-  #tcrouch{right:188px;bottom:85px;width:60px;height:60px;font-size:13px;background:rgba(255,184,0,0.22);border-color:var(--val-gold);color:#fff}
-  #taim{right:24px;bottom:195px;width:56px;height:56px;font-size:13px}
-  #treload{right:24px;bottom:24px;width:54px;height:54px;font-size:12px}
+  .tb{position:absolute;pointer-events:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,25,35,0.92);border:2px solid var(--val-border);color:#fff;font-weight:900;border-radius:50%;box-shadow:0 6px 18px rgba(0,0,0,0.7);transition:transform 0.08s, background 0.1s}
+  .tb:active,.tb.down{transform:scale(0.88);background:rgba(255,70,85,0.85);border-color:var(--val-red)}
   
-  /* Mobile Skill Buttons */
-  #t-skill-e{left:52%;bottom:25px;width:56px;height:56px;border-radius:10px;border-color:var(--val-cyan);font-size:12px;color:var(--val-cyan)}
-  #t-skill-q{left:42%;bottom:25px;width:56px;height:56px;border-radius:10px;border-color:var(--val-gold);font-size:12px;color:var(--val-gold)}
-  #t-chat-btn{left:20px;top:20px;width:46px;height:46px;border-radius:8px;font-size:18px;background:rgba(0,245,212,0.25);border-color:var(--val-cyan)}
-  #tmenu{right:20px;top:20px;width:46px;height:46px;border-radius:8px;font-size:20px}
-  #tsb{right:76px;top:20px;width:46px;height:46px;border-radius:8px;font-size:13px}
+  /* Fire Button - Big & Bright */
+  #tfire{right:24px;bottom:90px;width:86px;height:86px;background:rgba(255,70,85,0.92);border-color:var(--val-red);box-shadow:0 0 24px rgba(255,70,85,0.7);font-size:20px;letter-spacing:1px}
   
-  #twep{position:absolute;left:50%;bottom:92px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}
-  #twep span{padding:8px 14px;background:rgba(15,25,35,0.92);border:1px solid var(--val-border);border-radius:4px;font-size:13px;font-weight:800}
-  #twep span.on{border-color:var(--val-red);background:rgba(255,70,85,0.35);color:#fff}
-
+  /* Jump & Crouch - High-contrast & ergonomic */
+  #tjump{right:124px;bottom:90px;width:66px;height:66px;font-size:15px;background:rgba(0,245,212,0.35);border-color:var(--val-cyan);color:#fff;box-shadow:0 0 14px rgba(0,245,212,0.35)}
+  #tcrouch{right:200px;bottom:80px;width:64px;height:64px;font-size:14px;background:rgba(255,184,0,0.35);border-color:var(--val-gold);color:#fff;box-shadow:0 0 14px rgba(255,184,0,0.35)}
+  
+  #taim{right:24px;bottom:195px;width:58px;height:58px;font-size:13px;border-color:rgba(255,255,255,0.3)}
+  #treload{right:24px;bottom:18px;width:56px;height:56px;font-size:12px;border-color:rgba(255,255,255,0.3)}
+  
+  /* Mobile Skill Buttons E and Q */
+  #t-skill-e{left:52%;bottom:18px;width:58px;height:58px;border-radius:12px;border-color:var(--val-cyan);background:rgba(0,245,212,0.22);font-size:13px;color:var(--val-cyan);box-shadow:0 0 14px rgba(0,245,212,0.3)}
+  #t-skill-q{left:41%;bottom:18px;width:58px;height:58px;border-radius:12px;border-color:var(--val-gold);background:rgba(255,184,0,0.22);font-size:13px;color:var(--val-gold);box-shadow:0 0 14px rgba(255,184,0,0.3)}
+  
+  #t-chat-btn{left:20px;top:20px;width:48px;height:48px;border-radius:10px;font-size:20px;background:rgba(0,245,212,0.3);border-color:var(--val-cyan)}
+  #tmenu{right:20px;top:20px;width:48px;height:48px;border-radius:10px;font-size:22px}
+  #tsb{right:78px;top:20px;width:48px;height:48px;border-radius:10px;font-size:13px}
+  
+  #twep{position:absolute;left:50%;bottom:94px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}
+  #twep span{padding:8px 14px;background:rgba(15,25,35,0.94);border:1px solid var(--val-border);border-radius:6px;font-size:13px;font-weight:900}
+  #twep span.on{border-color:var(--val-red);background:rgba(255,70,85,0.45);color:#fff;box-shadow:0 0 12px rgba(255,70,85,0.4)}
+  
   /* Mobile Chat Modal */
   #m-chat-modal{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:90;display:none;align-items:flex-end;padding:16px}
   #m-chat-box{width:100%;background:var(--val-dark);border:1px solid var(--val-cyan);padding:14px;border-radius:8px;display:flex;gap:10px}
@@ -1300,22 +1306,24 @@ function respawnLocalPlayer(){
 function movePlayer(dt){
   if(P.dead) return;
 
-  // Jump pads
-  for(const p of pads){
+  // Jump pads trigger
+  for(let i=0; i<pads.length; i++){
+    const p = pads[i];
     if(P.pos.x >= p.min.x && P.pos.x <= p.max.x &&
        P.pos.z >= p.min.z && P.pos.z <= p.max.z &&
-       Math.abs(P.pos.y - p.max.y) < 1.0){
+       Math.abs(P.pos.y - p.max.y) < 1.2){
       P.vel.x = p.pad.vx;
       P.vel.y = p.pad.vy;
       P.vel.z = p.pad.vz;
+      P.onGround = false;
       sfx('jump');
       break;
     }
   }
 
-  // Smooth crouch camera height transition
+  // Smooth crouch transition
   const targetCrouch = P.crouching ? 1 : 0;
-  P.crouchT += (targetCrouch - P.crouchT) * Math.min(1, dt * 14);
+  P.crouchT += (targetCrouch - P.crouchT) * Math.min(1, dt * 16);
 
   // Input Movement Direction
   const move = V3();
@@ -1324,62 +1332,71 @@ function movePlayer(dt){
   if(keys['KeyA']) move.x -= 1;
   if(keys['KeyD']) move.x += 1;
   const isMoving = (move.lengthSq() > 0.01);
-  move.normalize();
+  if(isMoving) move.normalize();
 
   const forward = V3(-Math.sin(P.yaw), 0, -Math.cos(P.yaw));
   const right = V3(Math.cos(P.yaw), 0, -Math.sin(P.yaw));
   const wishDir = forward.multiplyScalar(-move.z).add(right.multiplyScalar(move.x)).normalize();
 
-  // Speed: Normal walk = 7.5, Shift slow walk = 4.2, Crouch walk = 3.2
-  let targetSpeed = 7.5;
-  if(P.crouching) targetSpeed = 3.2;
-  else if(keys['ShiftLeft']) targetSpeed = 4.2;
+  // Valorant Speeds
+  let maxSpeed = 7.8;
+  if(P.crouching) maxSpeed = 3.2;
+  else if(keys['ShiftLeft']) maxSpeed = 4.4;
 
   if(P.onGround){
     if(isMoving){
-      // Instant responsive acceleration to target speed
-      const accelRate = 22;
-      P.vel.x += (wishDir.x * targetSpeed - P.vel.x) * Math.min(1, dt * accelRate);
-      P.vel.z += (wishDir.z * targetSpeed - P.vel.z) * Math.min(1, dt * accelRate);
+      // Snappy linear acceleration
+      P.vel.x = wishDir.x * maxSpeed;
+      P.vel.z = wishDir.z * maxSpeed;
     } else {
-      // INSTANT STOP - Zero friction drift / zero ice skating!
-      const stopRate = 28;
-      P.vel.x += (0 - P.vel.x) * Math.min(1, dt * stopRate);
-      P.vel.z += (0 - P.vel.z) * Math.min(1, dt * stopRate);
-      if(Math.hypot(P.vel.x, P.vel.z) < 0.05){ P.vel.x = 0; P.vel.z = 0; }
+      // 100% INSTANT STOP - Absolute zero drift, zero sliding!
+      P.vel.x = 0;
+      P.vel.z = 0;
     }
 
-    // Jump
+    // Jump (Can only jump if not crouching)
     if(keys['Space'] && !P.crouching){
       P.vel.y = 8.5;
       P.onGround = false;
       sfx('jump');
     }
   } else {
-    // Air control & Jett passive glide
-    const airAccel = 12;
-    P.vel.x += wishDir.x * airAccel * dt;
-    P.vel.z += wishDir.z * airAccel * dt;
-    const gravity = (myAgent === 'jett' && keys['Space'] && P.vel.y < 0) ? 9 : 24;
+    // Air strafing & movement
+    if(isMoving){
+      const airControl = 16 * dt;
+      P.vel.x += wishDir.x * airControl;
+      P.vel.z += wishDir.z * airControl;
+      // Clamp air horizontal speed
+      const curH = Math.hypot(P.vel.x, P.vel.z);
+      if(curH > 10.5){
+        P.vel.x = (P.vel.x / curH) * 10.5;
+        P.vel.z = (P.vel.z / curH) * 10.5;
+      }
+    }
+    // Gravity (Jett Space glide)
+    const gravity = (myAgent === 'jett' && keys['Space'] && P.vel.y < 0) ? 9.5 : 24;
     P.vel.y -= gravity * dt;
   }
 
-  // SUB-STEPPING: Prevent any clipping through walls
+  // SUB-STEPPING: Check collision in clean micro-steps
   const speedTotal = Math.hypot(P.vel.x, P.vel.y, P.vel.z);
-  const steps = Math.min(8, Math.max(2, Math.ceil(speedTotal * dt / 0.15)));
+  const steps = Math.min(6, Math.max(2, Math.ceil(speedTotal * dt / 0.18)));
   const subDt = dt / steps;
 
+  let groundDetected = false;
   for(let step = 0; step < steps; step++){
     P.pos.x += P.vel.x * subDt;
     resolveCollision('x');
     P.pos.z += P.vel.z * subDt;
     resolveCollision('z');
     P.pos.y += P.vel.y * subDt;
-    P.onGround = false;
-    resolveCollision('y');
+    if(resolveCollision('y')){
+      groundDetected = true;
+    }
   }
+  P.onGround = groundDetected;
 
-  // Double-safety Boundary Clamping
+  // Double-safety Boundary Clamping (Arena is 68x78, Walls at +-35 and +-40)
   if(P.pos.x < -32.5) { P.pos.x = -32.5; P.vel.x = 0; }
   if(P.pos.x > 32.5) { P.pos.x = 32.5; P.vel.x = 0; }
   if(P.pos.z < -37.5) { P.pos.z = -37.5; P.vel.z = 0; }
@@ -1395,18 +1412,20 @@ function movePlayer(dt){
   P.speed = Math.hypot(P.vel.x, P.vel.z);
   updateVitalsUI();
 }
+
 function resolveCollision(axis){
   const pr = 0.42, ph = 1.75 - P.crouchT * 0.65;
+  let hitGround = false;
   for(let i=0; i<solids.length; i++){
     const b = solids[i];
     if(P.pos.x + pr > b.min.x && P.pos.x - pr < b.max.x &&
        P.pos.z + pr > b.min.z && P.pos.z - pr < b.max.z &&
        P.pos.y < b.max.y && P.pos.y + ph > b.min.y){
       if(axis === 'y'){
-        if(P.vel.y < 0){
+        if(P.vel.y <= 0){
           P.pos.y = b.max.y;
           P.vel.y = 0;
-          P.onGround = true;
+          hitGround = true;
         } else {
           P.pos.y = b.min.y - ph;
           P.vel.y = 0;
@@ -1420,13 +1439,16 @@ function resolveCollision(axis){
       }
     }
   }
+  return hitGround;
 }
-
 // ============================================================ ROBUST TOUCH / MOBILE SYSTEM
 // Always enable on touch-capable screens OR screen widths < 1024px
-const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 1024);
-if(isMobileDevice){
-  document.getElementById('touch').style.display = 'block';
+// Force touch HUD display so mobile and tablet players never lose buttons
+const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 1080);
+const touchOverlay = document.getElementById('touch');
+if(touchOverlay){
+  touchOverlay.style.display = 'block';
+  touchOverlay.style.pointerEvents = 'none';
 }
 
 let joyId = null, joyOrigin = {x:0, y:0};
