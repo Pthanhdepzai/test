@@ -1,0 +1,16 @@
+{
+  "name": "inkrun-online",
+  "version": "1.0.0",
+  "private": true,
+  "description": "INKRUN - cartoon arena FPS, chơi online với bạn bè",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
