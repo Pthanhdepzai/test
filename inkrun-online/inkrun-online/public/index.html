@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>INKRUN — VALORANT 2v2 Tactical Arena</title>
+<title>VALORANT 2V2 ARENA — ONLINE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Teko:wght@600;700&family=Rajdhani:wght@600;700;800&family=Chakra+Petch:wght@500;700&display=swap" rel="stylesheet">
@@ -13,48 +13,46 @@
     --val-red: #ff4655;
     --val-dark: #0f1923;
     --val-darker: #0b1118;
-    --val-panel: rgba(15, 25, 35, 0.85);
+    --val-panel: rgba(15, 25, 35, 0.88);
     --val-cyan: #00f5d4;
     --val-gold: #ffb800;
     --val-purple: #bd39b0;
-    --val-border: rgba(255, 255, 255, 0.15);
+    --val-border: rgba(255, 255, 255, 0.18);
   }
   *{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
   html,body{width:100%;height:100%;overflow:hidden;background:#0b1118;font-family:'Rajdhani','Chakra Petch',sans-serif;color:#fff;touch-action:none;overscroll-behavior:none}
   #c{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
-  #lines{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
-  #paper{position:fixed;inset:0;pointer-events:none;z-index:3;mix-blend-mode:overlay;opacity:0.18;background-image:radial-gradient(#fff 1px, transparent 1px);background-size:16px 16px}
   
-  /* Flashbang & blind overlay */
-  #flash-overlay{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:99;transition:opacity 0.1s ease-out}
-  #leer-overlay{position:fixed;inset:0;background:radial-gradient(circle, transparent 20%, rgba(189,57,176,0.92) 80%);opacity:0;pointer-events:none;z-index:98;transition:opacity 0.2s}
+  /* Overlays */
+  #flash-overlay{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:99;transition:opacity 0.12s ease-out}
+  #leer-overlay{position:fixed;inset:0;background:radial-gradient(circle, transparent 25%, rgba(189,57,176,0.92) 80%);opacity:0;pointer-events:none;z-index:98;transition:opacity 0.2s}
   
   /* HUD */
-  #hud{position:fixed;inset:0;pointer-events:none;z-index:4}
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:5}
   #xh{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:28px;height:28px;pointer-events:none}
-  #xh i{position:absolute;background:#00f5d4;box-shadow:0 0 4px #00f5d4}
-  #xh .t{top:0;left:13px;width:2px;height:7px}
-  #xh .b{bottom:0;left:13px;width:2px;height:7px}
-  #xh .l{left:0;top:13px;height:2px;width:7px}
-  #xh .r{right:0;top:13px;height:2px;width:7px}
+  #xh i{position:absolute;background:#00f5d4;box-shadow:0 0 5px #00f5d4}
+  #xh .t{top:0;left:13px;width:2px;height:8px}
+  #xh .b{bottom:0;left:13px;width:2px;height:8px}
+  #xh .l{left:0;top:13px;height:2px;width:8px}
+  #xh .r{right:0;top:13px;height:2px;width:8px}
   #xh .dot{top:13px;left:13px;width:2px;height:2px;background:#ff4655;box-shadow:0 0 4px #ff4655}
   
-  #hitm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:40px;height:40px;opacity:0;transition:opacity 0.15s;pointer-events:none}
-  #hitm i{position:absolute;background:#ff4655;box-shadow:0 0 6px #ff4655}
+  #hitm{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;opacity:0;transition:opacity 0.15s;pointer-events:none}
+  #hitm i{position:absolute;background:#ff4655;box-shadow:0 0 8px #ff4655}
   #hitm.on{opacity:1}
-  #hitm.head i{background:#ffb800;box-shadow:0 0 10px #ffb800}
-  #hitm i:nth-child(1){top:4px;left:4px;width:8px;height:2px;transform:rotate(45deg)}
-  #hitm i:nth-child(2){top:4px;right:4px;width:8px;height:2px;transform:rotate(-45deg)}
-  #hitm i:nth-child(3){bottom:4px;left:4px;width:8px;height:2px;transform:rotate(-45deg)}
-  #hitm i:nth-child(4){bottom:4px;right:4px;width:8px;height:2px;transform:rotate(45deg)}
+  #hitm.head i{background:#ffb800;box-shadow:0 0 12px #ffb800}
+  #hitm i:nth-child(1){top:4px;left:4px;width:9px;height:2px;transform:rotate(45deg)}
+  #hitm i:nth-child(2){top:4px;right:4px;width:9px;height:2px;transform:rotate(-45deg)}
+  #hitm i:nth-child(3){bottom:4px;left:4px;width:9px;height:2px;transform:rotate(-45deg)}
+  #hitm i:nth-child(4){bottom:4px;right:4px;width:9px;height:2px;transform:rotate(45deg)}
 
   #scope{position:absolute;inset:0;display:none;pointer-events:none;background:radial-gradient(circle at center, transparent 38%, rgba(0,0,0,0.96) 42%)}
-  #scope::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(0,245,212,0.4)}
-  #scope::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,245,212,0.4)}
+  #scope::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:1px;background:rgba(0,245,212,0.5)}
+  #scope::after{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,245,212,0.5)}
   
-  .panel{background:var(--val-panel);border:1px solid var(--val-border);backdrop-filter:blur(6px);padding:6px 14px;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
+  .panel{background:var(--val-panel);border:1px solid var(--val-border);backdrop-filter:blur(8px);padding:6px 14px;border-radius:4px;box-shadow:0 8px 24px rgba(0,0,0,0.5)}
   
-  #top-bar{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:18px}
+  #top-bar{position:absolute;top:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px}
   #room-banner{font-family:'Teko',sans-serif;font-size:26px;letter-spacing:2px;color:var(--val-cyan);text-transform:uppercase}
   #score-box{font-family:'Teko',sans-serif;font-size:32px;letter-spacing:3px;display:flex;align-items:center;gap:12px}
   #score-box .atk{color:var(--val-red)}
@@ -62,80 +60,80 @@
   #timer{font-family:'Chakra Petch',monospace;font-size:20px;font-weight:700;color:#fff;background:rgba(0,0,0,0.5);padding:4px 12px;border-radius:3px;border-left:3px solid var(--val-gold)}
 
   #feed{position:absolute;top:70px;right:18px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;pointer-events:none}
-  .kill-row{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;background:rgba(15,25,35,0.9);padding:4px 12px;border-left:3px solid var(--val-red);border-radius:2px;animation:feedIn 0.25s ease-out}
+  .kill-row{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;background:rgba(15,25,35,0.92);padding:4px 12px;border-left:3px solid var(--val-red);border-radius:2px;animation:feedIn 0.25s ease-out}
   @keyframes feedIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 
-  /* HP & Shield & Agent */
+  /* HP & Agent Card */
   #player-card{position:absolute;bottom:24px;left:24px;display:flex;align-items:center;gap:14px}
-  #agent-avatar{width:64px;height:64px;border-radius:6px;border:2px solid var(--val-red);background:#1a2733;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(255,70,85,0.3);position:relative;overflow:hidden}
+  #agent-avatar{width:64px;height:64px;border-radius:6px;border:2px solid var(--val-red);background:#1a2733;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(255,70,85,0.3);overflow:hidden}
   #agent-avatar .icon{font-size:26px}
   #agent-avatar .name{font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:var(--val-cyan)}
   #vitals{display:flex;flex-direction:column;gap:6px}
   #hp-row{display:flex;align-items:center;gap:10px}
-  #hp-bar{width:180px;height:18px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);border-radius:2px;overflow:hidden;position:relative}
+  #hp-bar{width:180px;height:18px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.2);border-radius:2px;overflow:hidden}
   #hp-fill{height:100%;width:100%;background:linear-gradient(90deg, #ff4655, #00f5d4);transition:width 0.15s ease-out}
-  #hp-num{font-family:'Teko',sans-serif;font-size:36px;line-height:1;min-width:55px;font-weight:700;color:#fff}
+  #hp-num{font-family:'Teko',sans-serif;font-size:38px;line-height:1;min-width:55px;font-weight:700;color:#fff}
   #shield-num{font-size:13px;font-weight:700;color:var(--val-purple);letter-spacing:1px}
 
-  /* Skills HUD */
+  /* Skills HUD (Center Bottom) */
   #skills-bar{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px}
-  .skill-slot{width:62px;height:62px;background:var(--val-panel);border:1px solid var(--val-border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;transition:all 0.2s}
+  .skill-slot{width:62px;height:62px;background:var(--val-panel);border:1px solid var(--val-border);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden}
   .skill-slot .key{position:absolute;top:2px;left:4px;font-size:10px;font-weight:800;color:#889;background:rgba(0,0,0,0.6);padding:1px 4px;border-radius:2px}
   .skill-slot .sicon{font-size:20px;margin-top:4px}
   .skill-slot .sname{font-size:10px;font-weight:700;color:#ccc;text-transform:uppercase;letter-spacing:0.5px}
   .skill-slot.ready{border-color:var(--val-cyan);box-shadow:0 0 12px rgba(0,245,212,0.25)}
-  .skill-slot .cd-overlay{position:absolute;inset:0;background:rgba(10,15,20,0.85);display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',monospace;font-size:16px;font-weight:700;color:var(--val-gold);opacity:0;pointer-events:none}
+  .skill-slot .cd-overlay{position:absolute;inset:0;background:rgba(10,15,20,0.88);display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',monospace;font-size:16px;font-weight:700;color:var(--val-gold);opacity:0;pointer-events:none}
   .skill-slot.cooling .cd-overlay{opacity:1}
 
-  /* Weapons HUD */
+  /* Weapons HUD (Right Bottom) */
   #ammo-card{position:absolute;bottom:24px;right:24px;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
   #ammo-row{display:flex;align-items:baseline;gap:8px}
   #ammonum{font-family:'Teko',sans-serif;font-size:62px;line-height:0.85;font-weight:700;color:#fff}
   #ammomax{font-family:'Teko',sans-serif;font-size:28px;color:#889}
-  #wname{font-family:'Teko',sans-serif;font-size:26px;letter-spacing:2px;color:var(--val-cyan);text-transform:uppercase}
+  #wname{font-family:'Teko',sans-serif;font-size:28px;letter-spacing:2px;color:var(--val-cyan);text-transform:uppercase}
   #wlist{display:flex;gap:6px}
   #wlist span{font-size:11px;font-weight:700;padding:3px 8px;background:rgba(15,25,35,0.7);border:1px solid rgba(255,255,255,0.1);border-radius:2px;color:#778}
-  #wlist span.on{color:#fff;border-color:var(--val-red);background:rgba(255,70,85,0.2)}
+  #wlist span.on{color:#fff;border-color:var(--val-red);background:rgba(255,70,85,0.25)}
 
   /* Chat Box */
   #chat-container{position:absolute;bottom:120px;left:24px;width:360px;max-height:220px;display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:10}
   #chat-messages{display:flex;flex-direction:column;gap:5px;overflow:hidden;pointer-events:auto}
-  .chat-msg{font-size:13px;line-height:1.3;background:rgba(10,16,23,0.85);backdrop-filter:blur(4px);padding:5px 10px;border-left:3px solid var(--val-cyan);border-radius:2px;color:#eee;animation:chatIn 0.2s ease-out;word-break:break-word}
+  .chat-msg{font-size:13px;line-height:1.3;background:rgba(10,16,23,0.88);backdrop-filter:blur(4px);padding:5px 10px;border-left:3px solid var(--val-cyan);border-radius:2px;color:#eee;animation:chatIn 0.2s ease-out;word-break:break-word}
   @keyframes chatIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
   .chat-msg .badge{font-size:10px;font-weight:800;padding:1px 5px;border-radius:2px;background:#223;margin-right:6px;text-transform:uppercase;color:var(--val-gold)}
   .chat-msg .author{font-weight:700;color:var(--val-cyan);margin-right:6px}
   #chat-input-bar{display:none;width:100%;margin-top:6px;pointer-events:auto}
   #chat-input{width:100%;background:rgba(15,25,35,0.95);border:1px solid var(--val-cyan);color:#fff;padding:8px 12px;font-family:inherit;font-size:13px;border-radius:3px;outline:none}
   
-  /* Mobile Controls */
-  #touch{position:fixed;inset:0;z-index:6;display:none;pointer-events:none}
+  /* Mobile Controls (Always active on touch devices) */
+  #touch{position:fixed;inset:0;z-index:8;pointer-events:none}
   #tjoy{position:absolute;left:0;top:0;width:50%;height:100%;pointer-events:auto}
   #tlook{position:absolute;right:0;top:0;width:50%;height:100%;pointer-events:auto}
-  #joybase{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:2px solid rgba(0,245,212,0.4);background:rgba(0,0,0,0.25);display:none;pointer-events:none}
-  #joyknob{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:var(--val-cyan);box-shadow:0 0 12px var(--val-cyan)}
+  #joybase{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:2px solid rgba(0,245,212,0.5);background:rgba(0,0,0,0.3);display:none;pointer-events:none}
+  #joyknob{position:absolute;left:50%;top:50%;width:50px;height:50px;margin:-25px 0 0 -25px;border-radius:50%;background:var(--val-cyan);box-shadow:0 0 16px var(--val-cyan)}
   
-  .tb{position:absolute;pointer-events:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,25,35,0.85);border:1px solid var(--val-border);color:#fff;font-weight:800;border-radius:50%;font-size:13px;box-shadow:0 4px 12px rgba(0,0,0,0.5);transition:transform 0.08s, background 0.1s}
-  .tb:active,.tb.down{transform:scale(0.92);background:rgba(255,70,85,0.6);border-color:var(--val-red)}
-  #tfire{right:28px;bottom:95px;width:76px;height:76px;background:rgba(255,70,85,0.8);border-color:var(--val-red);box-shadow:0 0 16px rgba(255,70,85,0.5);font-size:16px}
-  #tjump{right:116px;bottom:85px;width:58px;height:58px}
-  #tslide{right:182px;bottom:75px;width:54px;height:54px;font-size:12px}
-  #tdash{right:116px;bottom:155px;width:52px;height:52px;font-size:12px;color:var(--val-cyan);border-color:var(--val-cyan)}
-  #taim{right:28px;bottom:185px;width:52px;height:52px;font-size:12px}
-  #treload{right:28px;bottom:25px;width:50px;height:50px;font-size:11px}
+  .tb{position:absolute;pointer-events:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(15,25,35,0.88);border:1px solid var(--val-border);color:#fff;font-weight:800;border-radius:50%;box-shadow:0 4px 14px rgba(0,0,0,0.6);transition:transform 0.08s, background 0.1s}
+  .tb:active,.tb.down{transform:scale(0.9);background:rgba(255,70,85,0.7);border-color:var(--val-red)}
+  #tfire{right:28px;bottom:95px;width:80px;height:80px;background:rgba(255,70,85,0.85);border-color:var(--val-red);box-shadow:0 0 20px rgba(255,70,85,0.6);font-size:18px}
+  #tjump{right:120px;bottom:85px;width:60px;height:60px;font-size:13px}
+  #tslide{right:190px;bottom:75px;width:56px;height:56px;font-size:12px}
+  #tdash{right:120px;bottom:155px;width:54px;height:54px;font-size:12px;color:var(--val-cyan);border-color:var(--val-cyan)}
+  #taim{right:28px;bottom:190px;width:54px;height:54px;font-size:12px}
+  #treload{right:28px;bottom:25px;width:52px;height:52px;font-size:11px}
   
   /* Mobile Skill Buttons */
-  #t-skill-e{left:52%;bottom:25px;width:54px;height:54px;border-radius:8px;border-color:var(--val-cyan);font-size:12px;color:var(--val-cyan)}
-  #t-skill-q{left:42%;bottom:25px;width:54px;height:54px;border-radius:8px;border-color:var(--val-gold);font-size:12px;color:var(--val-gold)}
-  #t-chat-btn{left:20px;top:20px;width:44px;height:44px;border-radius:6px;font-size:16px;background:rgba(0,245,212,0.2);border-color:var(--val-cyan)}
-  #tmenu{right:20px;top:20px;width:44px;height:44px;border-radius:6px;font-size:18px}
-  #tsb{right:74px;top:20px;width:44px;height:44px;border-radius:6px;font-size:12px}
+  #t-skill-e{left:52%;bottom:25px;width:56px;height:56px;border-radius:10px;border-color:var(--val-cyan);font-size:12px;color:var(--val-cyan)}
+  #t-skill-q{left:42%;bottom:25px;width:56px;height:56px;border-radius:10px;border-color:var(--val-gold);font-size:12px;color:var(--val-gold)}
+  #t-chat-btn{left:20px;top:20px;width:46px;height:46px;border-radius:8px;font-size:18px;background:rgba(0,245,212,0.25);border-color:var(--val-cyan)}
+  #tmenu{right:20px;top:20px;width:46px;height:46px;border-radius:8px;font-size:20px}
+  #tsb{right:76px;top:20px;width:46px;height:46px;border-radius:8px;font-size:13px}
   
-  #twep{position:absolute;left:50%;bottom:90px;transform:translateX(-50%);display:flex;gap:6px;pointer-events:auto}
-  #twep span{padding:8px 12px;background:rgba(15,25,35,0.9);border:1px solid var(--val-border);border-radius:4px;font-size:12px;font-weight:700}
-  #twep span.on{border-color:var(--val-red);background:rgba(255,70,85,0.3);color:#fff}
+  #twep{position:absolute;left:50%;bottom:92px;transform:translateX(-50%);display:flex;gap:8px;pointer-events:auto}
+  #twep span{padding:8px 14px;background:rgba(15,25,35,0.92);border:1px solid var(--val-border);border-radius:4px;font-size:13px;font-weight:800}
+  #twep span.on{border-color:var(--val-red);background:rgba(255,70,85,0.35);color:#fff}
 
   /* Mobile Chat Modal */
-  #m-chat-modal{position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:90;display:none;align-items:flex-end;padding:16px}
+  #m-chat-modal{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:90;display:none;align-items:flex-end;padding:16px}
   #m-chat-box{width:100%;background:var(--val-dark);border:1px solid var(--val-cyan);padding:14px;border-radius:8px;display:flex;gap:10px}
   #m-chat-input{flex:1;background:#18222d;border:1px solid rgba(255,255,255,0.2);color:#fff;padding:10px 14px;border-radius:4px;font-size:15px;outline:none}
   #m-chat-send{padding:10px 20px;background:var(--val-cyan);color:#0b1118;font-weight:800;border:none;border-radius:4px;font-size:14px}
@@ -144,19 +142,18 @@
   #rotate{position:fixed;inset:0;background:#0b1118;z-index:999;display:none;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--val-red);letter-spacing:2px}
   @media(orientation:portrait){#rotate{display:flex}}
 
-  /* Overlay / Lobby Menu */
-  #overlay{position:fixed;inset:0;background:rgba(11,17,24,0.92);backdrop-filter:blur(8px);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
-  .card{background:#0f1923;border:1px solid rgba(255,70,85,0.3);box-shadow:0 16px 48px rgba(0,0,0,0.8),0 0 32px rgba(255,70,85,0.15);width:100%;max-width:680px;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:16px;max-height:92vh;overflow-y:auto}
+  /* Lobby Overlay */
+  #overlay{position:fixed;inset:0;background:rgba(11,17,24,0.94);backdrop-filter:blur(10px);z-index:50;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{background:#0f1923;border:1px solid rgba(255,70,85,0.35);box-shadow:0 16px 48px rgba(0,0,0,0.85),0 0 32px rgba(255,70,85,0.2);width:100%;max-width:680px;border-radius:8px;padding:24px;display:flex;flex-direction:column;gap:16px;max-height:92vh;overflow-y:auto}
   .card h1{font-family:'Teko',sans-serif;font-size:46px;line-height:0.9;letter-spacing:3px;color:#fff}
   .card h1 span{color:var(--val-red)}
   .tag{font-size:12px;font-weight:800;letter-spacing:2px;color:var(--val-cyan);text-transform:uppercase}
   
-  /* Agent Selection Cards */
   .agent-select-title{font-size:13px;font-weight:800;color:#99a;letter-spacing:1px;text-transform:uppercase}
   .agent-grid{display:grid;grid-template-columns:repeat(4, 1fr);gap:10px}
   .agent-card{background:#16202c;border:2px solid rgba(255,255,255,0.1);border-radius:6px;padding:10px;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:all 0.2s;text-align:center}
   .agent-card:hover{border-color:rgba(0,245,212,0.5);transform:translateY(-2px)}
-  .agent-card.selected{border-color:var(--val-red);background:rgba(255,70,85,0.15);box-shadow:0 0 16px rgba(255,70,85,0.3)}
+  .agent-card.selected{border-color:var(--val-red);background:rgba(255,70,85,0.18);box-shadow:0 0 16px rgba(255,70,85,0.35)}
   .agent-card .a-icon{font-size:32px;margin-bottom:4px}
   .agent-card .a-name{font-family:'Teko',sans-serif;font-size:22px;letter-spacing:1px;line-height:1}
   .agent-card .a-role{font-size:10px;font-weight:700;color:#889;text-transform:uppercase}
@@ -167,7 +164,7 @@
   .lobby-inputs input{background:#18222d;border:1px solid rgba(255,255,255,0.15);color:#fff;padding:8px 12px;border-radius:4px;font-family:inherit;font-size:14px;outline:none}
   .lobby-inputs input:focus{border-color:var(--val-cyan)}
 
-  .play-btn{background:var(--val-red);color:#fff;font-family:'Teko',sans-serif;font-size:30px;letter-spacing:3px;border:none;padding:10px;border-radius:4px;cursor:pointer;transition:all 0.2s;text-align:center;box-shadow:0 6px 20px rgba(255,70,85,0.4)}
+  .play-btn{background:var(--val-red);color:#fff;font-family:'Teko',sans-serif;font-size:32px;letter-spacing:3px;border:none;padding:10px;border-radius:4px;cursor:pointer;transition:all 0.2s;text-align:center;box-shadow:0 6px 20px rgba(255,70,85,0.45)}
   .play-btn:hover{background:#ff5c6b;transform:translateY(-1px)}
   
   #sb{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);min-width:380px;display:none;z-index:20}
@@ -181,8 +178,6 @@
 </head>
 <body>
 <canvas id="c"></canvas>
-<canvas id="lines"></canvas>
-<div id="paper"></div>
 <div id="flash-overlay"></div>
 <div id="leer-overlay"></div>
 
@@ -441,43 +436,42 @@ renderer.shadowMap.enabled = true;
 renderer.autoClear = false;
 
 const scene = new T.Scene();
-scene.background = new T.Color(0x78b8ea);
-scene.fog = new T.FogExp2(0xb0d8f8, 0.004);
+scene.background = new T.Color(0x6aa6e2); // Bright sunny Valorant daylight sky
+scene.fog = new T.FogExp2(0x9bc2ea, 0.005);
 
-const camera = new T.PerspectiveCamera(95, window.innerWidth / window.innerHeight, 0.1, 300);
+const camera = new T.PerspectiveCamera(95, window.innerWidth / window.innerHeight, 0.1, 350);
 scene.add(camera);
 
-// Viewmodel Scene
+// Viewmodel Scene (Overlaid without clearing color buffer)
 const vmScene = new T.Scene();
 vmScene.background = null;
 const vmCamera = new T.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 10);
 const vmRoot = new T.Group();
 vmScene.add(vmRoot);
 
-// Lights
+// Lighting
 const hemi = new T.HemisphereLight(0xffffff, 0x556677, 0.95);
 scene.add(hemi);
-const dir = new T.DirectionalLight(0xfffaed, 1.35);
-const amb = new T.AmbientLight(0xd8ecff, 0.5);
-scene.add(amb);
-dir.position.set(24, 45, 18);
+const dir = new T.DirectionalLight(0xfffaee, 1.35);
+dir.position.set(32, 64, 24);
 dir.castShadow = true;
 scene.add(dir);
+const amb = new T.AmbientLight(0xddeeff, 0.5);
+scene.add(amb);
 
-const vmLight = new T.DirectionalLight(0xffffff, 1.2);
+const vmLight = new T.DirectionalLight(0xffffff, 1.3);
 vmLight.position.set(2, 4, 3);
 vmScene.add(vmLight);
 vmScene.add(new T.AmbientLight(0x8899bb, 0.8));
 
-// Materials
 function toonMat(opts={}){
   return new T.MeshLambertMaterial(Object.assign({
-    reflectivity: 0.1
+    reflectivity: 0.15
   }, opts));
 }
-const hullMat = new T.MeshBasicMaterial({ color: 0x05070a, side: T.BackSide });
 
 // ============================================================ VALORANT 2V2 ARENA MAP
+// Clean, completely enclosed tactical arena with indestructible high boundary walls & ceiling barrier
 const solids=[], visBoxes=[], pads=[], SPAWNS=[];
 const C = {
   floor: 0xb5b0a3,
@@ -508,78 +502,81 @@ function addBox(x,z,w,d,y0,y1,color,o={}){
   return b;
 }
 
-// 1. Boundary & Main Arena Floor (88m x 88m)
-addBox(0, 0, 92, 92, -2, 0, C.floor);
-addBox(0, -46, 96, 4, 0, 12, C.wall);
-addBox(0, 46, 96, 4, 0, 12, C.wall);
-addBox(-46, 0, 4, 96, 0, 12, C.wall);
-addBox(46, 0, 4, 96, 0, 12, C.wall);
+// 1. Unescapable Solid Boundary (68m x 78m, Height 22m) + Ceiling
+addBox(0, 0, 72, 82, -2, 0, C.floor); // Main Ground Floor (Y = 0)
+// High outer containment walls (Y: 0 to 22)
+addBox(0, -40, 76, 4, 0, 22, C.wall);  // South Wall (Behind Attacker Spawn)
+addBox(0, 40, 76, 4, 0, 22, C.wall);   // North Wall (Behind Defender Spawn)
+addBox(-35, 0, 4, 84, 0, 22, C.wall);  // West Wall (Site B Side)
+addBox(35, 0, 4, 84, 0, 22, C.wall);   // East Wall (Site A Side)
+// Invisible solid ceiling barrier so Jett/Updraft can never fly outside the map!
+addBox(0, 0, 76, 84, 21.5, 24, C.wall, {solid: true, walk: false});
 
-// 2. SITE A (East Site: X = +16 to +36)
-addBox(26, 0, 26, 28, 0, 0.8, C.siteA); // Plant Zone A
-// Radianite Crates Stack A (High tactical cover)
-addBox(24, 2, 3, 3, 0.8, 4.0, C.radianite);
-addBox(24, 2, 2.8, 2.8, 4.0, 6.8, C.radianite);
-addBox(27.5, 2, 3, 2, 0.8, 3.8, C.wood);
-// A Rafters / Heaven (Elevated position Y = 4.5)
-addBox(36, 12, 12, 14, 0, 4.5, C.stone);
-addBox(36, 12, 12, 14, 4.5, 5.5, C.steel, {walk:false});
-// Stairs up to Heaven
-for(let i=0; i<8; i++){
-  addBox(29, 12 - i*1.6, 3.5, 1.6, 0, 4.2 - i*0.55, C.stone, {walk:false});
+// 2. SITE A (East Site: X = +14 to +28, Z = -10 to +10)
+addBox(20, 0, 20, 24, 0, 0.6, C.siteA); // Plant Zone A (Red Marker)
+// Double-stacked Radianite Crates (Cover angles)
+addBox(18, 2, 3.2, 3.2, 0.6, 3.8, C.radianite);
+addBox(18, 2, 3.0, 3.0, 3.8, 6.6, C.radianite);
+addBox(22, -2, 3.0, 2.0, 0.6, 3.4, C.wood);
+// A Rafters / Heaven (Elevated sniper perch Y = 4.0)
+addBox(28, 12, 10, 12, 0, 4.0, C.stone);
+addBox(28, 12, 10, 12, 4.0, 5.2, C.steel, {walk:false});
+// Staircase to Heaven
+for(let i=0; i<7; i++){
+  addBox(22, 12 - i*1.6, 3.2, 1.6, 0, 3.8 - i*0.55, C.stone, {walk:false});
 }
-// A Main entrance chokepoint
-addBox(24, -20, 8, 2, 0, 7, C.wall, {walk:false});
-addBox(34, -20, 6, 2, 0, 7, C.wall, {walk:false});
-addBox(29, -10, 2, 2, 0, 2.5, C.steel, {walk:false});
+// A Main corridor cover pillars
+addBox(18, -18, 6, 2, 0, 6, C.wall, {walk:false});
+addBox(26, -18, 4, 2, 0, 6, C.wall, {walk:false});
+addBox(22, -8, 2, 2, 0, 2.5, C.steel, {walk:false});
 
-// 3. SITE B (West Site: X = -36 to -16)
-addBox(-26, 0, 26, 28, 0, 0.8, C.siteB); // Plant Zone B
+// 3. SITE B (West Site: X = -28 to -14, Z = -10 to +10)
+addBox(-20, 0, 20, 24, 0, 0.6, C.siteB); // Plant Zone B (Cyan Marker)
 // Radianite Crates Stack B
-addBox(-24, -2, 3, 3, 0.8, 4.0, C.radianite);
-addBox(-27.5, -2, 2.8, 2.8, 0.8, 3.8, C.steel);
-// B Container / Garage Archway
-addBox(-34, 10, 14, 12, 0, 4.5, C.stone);
-addBox(-24, 10, 2, 8, 0, 6, C.wall, {walk:false});
-// B Long Ramp
-for(let i=0; i<6; i++){
-  addBox(-24, -12 - i*1.8, 4, 1.8, 0, 3.0 - i*0.5, C.stone, {walk:false});
+addBox(-18, -2, 3.2, 3.2, 0.6, 3.8, C.radianite);
+addBox(-22, -2, 2.8, 2.8, 0.6, 3.4, C.steel);
+// B Garage / Archway Container
+addBox(-28, 10, 10, 12, 0, 4.0, C.stone);
+addBox(-18, 10, 2, 8, 0, 6, C.wall, {walk:false});
+// B Long Ramp to elevated platform
+for(let i=0; i<5; i++){
+  addBox(-18, -12 - i*1.8, 3.6, 1.8, 0, 2.8 - i*0.55, C.stone, {walk:false});
 }
 
-// 4. MID COURTYARD & CONNECTOR (Center: X = -12 to +12)
-addBox(0, 0, 22, 26, 0, 1.5, C.mid);
-// Central Radianite Monolith
-addBox(0, 0, 4, 4, 1.5, 7.5, C.radianiteCore);
-// Tactical Half-Walls for Head-glitch Duels
-addBox(-7, 5, 1.4, 6, 1.5, 3.0, C.steel, {walk:false});
-addBox(7, -5, 1.4, 6, 1.5, 3.0, C.steel, {walk:false});
-// Mid Archway pillars
-addBox(-11, 0, 2, 2, 1.5, 7.0, C.stone, {walk:false});
-addBox(11, 0, 2, 2, 1.5, 7.0, C.stone, {walk:false});
-addBox(0, 0, 24, 2, 6.0, 7.2, C.stone, {walk:false});
+// 4. MID COURTYARD & CONNECTOR (Center: X = -10 to +10, Z = -12 to +12)
+addBox(0, 0, 18, 22, 0, 1.2, C.mid);
+// Central Radianite Reactor Monolith
+addBox(0, 0, 3.6, 3.6, 1.2, 6.8, C.radianiteCore);
+// Tactical Half-Walls for Head-glitch Peek Duels (Sheriff/Vandal)
+addBox(-6, 4, 1.4, 5, 1.2, 2.6, C.steel, {walk:false});
+addBox(6, -4, 1.4, 5, 1.2, 2.6, C.steel, {walk:false});
+// Mid Connector Pillars
+addBox(-9, 0, 2, 2, 1.2, 6.5, C.stone, {walk:false});
+addBox(9, 0, 2, 2, 1.2, 6.5, C.stone, {walk:false});
+addBox(0, 0, 20, 2, 5.8, 7.0, C.stone, {walk:false});
 
 // 5. Jump Pads (Flank High-mobility)
-addBox(12, 18, 2.4, 2.4, 0, 0.3, C.pad, {pad: {vx: 12, vy: 16, vz: -10, dir: true}});
-addBox(-12, -18, 2.4, 2.4, 0, 0.3, C.pad, {pad: {vx: -12, vy: 16, vz: 10, dir: true}});
+addBox(10, 16, 2.4, 2.4, 0, 0.3, C.pad, {pad: {vx: 10, vy: 14, vz: -8, dir: true}});
+addBox(-10, -16, 2.4, 2.4, 0, 0.3, C.pad, {pad: {vx: -10, vy: 14, vz: 8, dir: true}});
 
 // 6. SPAWN COURTYARDS
-// Attacker Spawn (South: Z = -34)
-addBox(0, -34, 30, 12, 0, 1.2, C.mid);
-addBox(0, -38, 12, 2, 1.2, 4.0, C.wall, {walk:false});
-// Defender Spawn (North: Z = +34)
-addBox(0, 34, 30, 12, 0, 1.2, C.mid);
-addBox(0, 38, 12, 2, 1.2, 4.0, C.wall, {walk:false});
+// Attacker Spawn (South: Z = -30)
+addBox(0, -30, 26, 10, 0, 1.0, C.mid);
+addBox(0, -35, 10, 2, 1.0, 3.8, C.wall, {walk:false});
+// Defender Spawn (North: Z = +30)
+addBox(0, 30, 26, 10, 0, 1.0, C.mid);
+addBox(0, 35, 10, 2, 1.0, 3.8, C.wall, {walk:false});
 
-// Spawn points
+// 1v1 / 2v2 Tactical Spawn Points
 for(const [sx, sz] of [
-  [0, -34], [6, -33], [-6, -33], [12, -34], [-12, -34], [24, -28], [-24, -28],
-  [0, 34], [6, 33], [-6, 33], [12, 34], [-12, 34], [24, 28], [-24, 28],
-  [26, 8], [-26, -8], [0, 8], [0, -8]
+  [0, -30], [5, -29], [-5, -29], [18, -24], [-18, -24],
+  [0, 30], [5, 29], [-5, 29], [18, 24], [-18, 24],
+  [20, 6], [-20, -6], [0, 6], [0, -6]
 ]){
   SPAWNS.push({x: sx, z: sz});
 }
 
-// Build Consolidated Map Mesh
+// Build Consolidated Map Meshes with Cel-shaded Outlines
 const mapGroup = new T.Group();
 scene.add(mapGroup);
 function buildMap(){
@@ -594,7 +591,9 @@ function buildMap(){
     mesh.receiveShadow = true;
     mesh.castShadow = true;
     mapGroup.add(mesh);
-    const edges = new T.LineSegments(new T.EdgesGeometry(geo), new T.LineBasicMaterial({ color: 0x18202c, linewidth: 1 }));
+
+    // Sharp cel-shaded dark edge outline
+    const edges = new T.LineSegments(new T.EdgesGeometry(geo), new T.LineBasicMaterial({ color: 0x161d26, linewidth: 1 }));
     mesh.add(edges);
   }
   for(const p of pads){
@@ -619,7 +618,7 @@ for(let i=0; i<WEAPONS.length; i++){
     m.rotation.set(rx,ry,rz);
     g.add(m);
   }
-  // Muzzle flash
+  // Muzzle flash light
   const fl=new T.PointLight(0xffea88, 0, 8);
   fl.position.set(...w.muzzle);
   g.add(fl);
@@ -650,17 +649,11 @@ function buildAgentModel(agentName, colorHex){
 
   // Agent Specific Details
   if(agentName === 'jett'){
-    // White hair topknot
     const hair=new T.Mesh(new T.ConeGeometry(0.18, 0.3, 8), toonMat({color: 0xf0f4f8}));
     hair.position.set(0, 1.9, -0.05);
     hair.rotation.x = -0.3;
     g.add(hair);
-    const sash=new T.Mesh(new T.TorusGeometry(0.38, 0.05, 6, 16), cyan);
-    sash.position.y = 1.0;
-    sash.rotation.x = Math.PI/2;
-    g.add(sash);
   } else if(agentName === 'reyna'){
-    // Purple Horns
     const horn1=new T.Mesh(new T.ConeGeometry(0.08, 0.28, 6), purple);
     horn1.position.set(-0.16, 1.85, 0);
     horn1.rotation.z = 0.4;
@@ -670,12 +663,10 @@ function buildAgentModel(agentName, colorHex){
     horn2.rotation.z = -0.4;
     g.add(horn2);
   } else if(agentName === 'phoenix'){
-    // Flame Crown
     const flame=new T.Mesh(new T.ConeGeometry(0.16, 0.35, 6), gold);
     flame.position.set(0, 1.9, 0.05);
     g.add(flame);
   } else if(agentName === 'omen'){
-    // Triple slit cyan face
     for(let i=-1; i<=1; i++){
       const slit=new T.Mesh(new T.BoxGeometry(0.04, 0.15, 0.04), cyan);
       slit.position.set(i*0.08, 1.62, -0.26);
@@ -695,7 +686,7 @@ function buildAgentModel(agentName, colorHex){
 }
 
 // ============================================================ ACTIVE SKILL OBJECTS
-const activeSkills = []; // { type, mesh, update(dt), remove() }
+const activeSkills = [];
 
 function spawnSmoke(pos, dur=12){
   const g = new T.Mesh(new T.SphereGeometry(4.2, 16, 12), new T.MeshStandardMaterial({
@@ -743,18 +734,12 @@ function spawnLeer(pos, dur=5){
   let life = dur;
   activeSkills.push({
     mesh: eye,
-    pos: pos.clone(),
     update(dt){
       life -= dt;
       eye.rotation.y += dt*3;
       eye.rotation.x += dt*2;
-      // Check distance to local player
       const d = P.pos.distanceTo(eye.position);
-      if(d < 25){
-        document.getElementById('leer-overlay').style.opacity = '1';
-      } else {
-        document.getElementById('leer-overlay').style.opacity = '0';
-      }
+      document.getElementById('leer-overlay').style.opacity = (d < 24) ? '1' : '0';
       return life > 0;
     },
     remove(){
@@ -768,7 +753,7 @@ function spawnLeer(pos, dur=5){
 
 // ============================================================ PLAYER CONTROLLER
 const P = {
-  pos: V3(0, 0.5, -32),
+  pos: V3(0, 0.5, -30),
   vel: V3(),
   yaw: 0,
   pitch: 0,
@@ -779,7 +764,7 @@ const P = {
   onGround: false,
   sliding: false,
   zoom: false,
-  wi: 0, // Weapon Index
+  wi: 0,
   ammo: [25, 30, 6, 5, 30],
   reloading: false,
   reloadTimer: 0,
@@ -830,7 +815,7 @@ window.addEventListener('mousemove', e => {
   if(document.pointerLockElement === canvas){
     const s = 0.0022 * sens * (P.zoom ? 0.4 : 1.0);
     P.yaw -= e.movementX * s;
-    P.pitch = Math.max(-1.5, Math.min(1.5, P.pitch - e.movementY * s));
+    P.pitch = Math.max(-1.45, Math.min(1.45, P.pitch - e.movementY * s));
   }
 });
 
@@ -868,38 +853,32 @@ function updateWeaponUI(){
   listSpans.forEach((sp, idx) => sp.classList.toggle('on', idx === P.wi));
   const twepSpans = document.querySelectorAll('#twep span');
   twepSpans.forEach((sp, idx) => sp.classList.toggle('on', idx === P.wi));
-  if(TOUCH){
-    document.getElementById('taim').style.display = w.zoom ? 'flex' : 'none';
-  }
+  document.getElementById('taim').style.display = w.zoom ? 'flex' : 'none';
 }
 
-// ============================================================ SKILLS IMPLEMENTATION
+// ============================================================ SKILLS
 function useSkillE(){
   if(cdE > 0 || P.dead) return;
   const forward = V3(-Math.sin(P.yaw), 0, -Math.cos(P.yaw)).normalize();
   
   if(myAgent === 'jett'){
-    // Tailwind (Dash)
-    P.vel.copy(forward).multiplyScalar(30);
-    P.vel.y = 3;
+    P.vel.copy(forward).multiplyScalar(28);
+    P.vel.y = 2;
     sfx('dash');
     cdE = AGENTS.jett.skillE.cd;
     broadcastSkill('dash', P.pos, forward);
   } else if(myAgent === 'reyna'){
-    // Leer (Con Mắt Hư Vô)
     const eyePos = P.pos.clone().add(forward.clone().multiplyScalar(7)).add(V3(0, 1.8, 0));
     spawnLeer(eyePos);
     sfx('leer');
     cdE = AGENTS.reyna.skillE.cd;
     broadcastSkill('leer', eyePos, forward);
   } else if(myAgent === 'phoenix'){
-    // Blaze (Tường Lửa)
     spawnWall(P.pos, forward);
     sfx('blaze');
     cdE = AGENTS.phoenix.skillE.cd;
     broadcastSkill('blaze', P.pos, forward);
   } else if(myAgent === 'omen'){
-    // Dark Cover (Khói Omen)
     const smokePos = P.pos.clone().add(forward.clone().multiplyScalar(12));
     smokePos.y = 1.5;
     spawnSmoke(smokePos);
@@ -914,29 +893,28 @@ function useSkillQ(){
   const forward = V3(-Math.sin(P.yaw), 0, -Math.cos(P.yaw)).normalize();
   
   if(myAgent === 'jett'){
-    // Updraft
-    P.vel.y = 16;
+    P.vel.y = 15;
     sfx('updraft');
     cdQ = AGENTS.jett.skillQ.cd;
     broadcastSkill('updraft', P.pos, forward);
   } else if(myAgent === 'reyna'){
-    // Devour (Overheal + Speed)
     P.hp = Math.min(150, P.hp + 50);
     sfx('devour');
     popMsg('+50 OVERHEAL');
     cdQ = AGENTS.reyna.skillQ.cd;
     updateVitalsUI();
   } else if(myAgent === 'phoenix'){
-    // Curveball (Flashbang)
     const flashPos = P.pos.clone().add(forward.clone().multiplyScalar(8)).add(V3(0, 1.5, 0));
     sfx('flash');
     triggerFlashbang();
     cdQ = AGENTS.phoenix.skillQ.cd;
     broadcastSkill('flash', flashPos, forward);
   } else if(myAgent === 'omen'){
-    // Shrouded Step (Teleport)
-    const tpTarget = P.pos.clone().add(forward.clone().multiplyScalar(15));
-    tpTarget.y = 1.0;
+    const tpTarget = P.pos.clone().add(forward.clone().multiplyScalar(14));
+    tpTarget.y = 0.5;
+    // Keep teleport within boundary limits
+    tpTarget.x = Math.max(-32, Math.min(32, tpTarget.x));
+    tpTarget.z = Math.max(-36, Math.min(36, tpTarget.z));
     sfx('tp');
     P.pos.copy(tpTarget);
     P.vel.set(0,0,0);
@@ -987,15 +965,12 @@ function shootWeapon(){
   P.shootTimer = 60 / w.rpm;
   sfx(w.sfx);
 
-  // Muzzle flash
   const fl = vmGroups[P.wi].userData.flash;
   if(fl){ fl.intensity = 4; setTimeout(() => fl.intensity = 0, 40); }
 
-  // Recoil
   P.pitch += (w.kickUp * 0.015);
   P.yaw += ((Math.random()-0.5) * w.kickSide * 0.015);
 
-  // Raycast bullet
   const spread = (P.zoom ? (w.zoomSpread||0.02) : w.spread) * (P.speed > 2 ? 2.2 : 1.0) * 0.012;
   const dir = V3(
     -Math.sin(P.yaw) + (Math.random()-0.5)*spread,
@@ -1014,7 +989,6 @@ function shootWeapon(){
   if(hits.length > 0){
     const hit = hits[0];
     bulletEnds.push(hit.point.x, hit.point.y, hit.point.z);
-    // Find victim
     for(const r of remotes.values()){
       if(r.model.body === hit.object || r.model.head === hit.object){
         const isHead = (r.model.head === hit.object);
@@ -1111,14 +1085,17 @@ function esc(s){
 }
 
 // Mobile Chat
-document.getElementById('t-chat-btn').addEventListener('click', () => {
+document.getElementById('t-chat-btn').addEventListener('touchstart', e => {
+  e.preventDefault();
   document.getElementById('m-chat-modal').style.display = 'flex';
   document.getElementById('m-chat-input').focus();
 });
-document.getElementById('m-chat-close').addEventListener('click', () => {
+document.getElementById('m-chat-close').addEventListener('touchstart', e => {
+  e.preventDefault();
   document.getElementById('m-chat-modal').style.display = 'none';
 });
-document.getElementById('m-chat-send').addEventListener('click', () => {
+document.getElementById('m-chat-send').addEventListener('touchstart', e => {
+  e.preventDefault();
   const inp = document.getElementById('m-chat-input');
   const msg = inp.value.trim();
   if(msg) netSend({ t: 'chat', msg });
@@ -1126,7 +1103,7 @@ document.getElementById('m-chat-send').addEventListener('click', () => {
   document.getElementById('m-chat-modal').style.display = 'none';
 });
 
-// ============================================================ NETWORKING (WEBSOCKET)
+// ============================================================ NETWORKING
 let ws = null, joined = false, myId = null;
 
 function connect(){
@@ -1212,7 +1189,6 @@ function handleNetMessage(m){
     }
 
     case 'h': {
-      // Local player damaged
       let dmg = m.dmg || 20;
       if(P.shield > 0){
         const absorbed = Math.min(P.shield, dmg * 0.66);
@@ -1253,25 +1229,13 @@ function handleNetMessage(m){
 function handleRemoteSkill(m){
   const pos = m.p ? V3(m.p[0], m.p[1], m.p[2]) : V3();
   const dir = m.dir ? V3(m.dir[0], m.dir[1], m.dir[2]) : V3(0,0,-1);
-  if(m.skill === 'dash'){
-    sfx('dash', 0.5);
-  } else if(m.skill === 'updraft'){
-    sfx('updraft', 0.5);
-  } else if(m.skill === 'leer'){
-    spawnLeer(pos);
-    sfx('leer', 0.5);
-  } else if(m.skill === 'blaze'){
-    spawnWall(pos, dir);
-    sfx('blaze', 0.5);
-  } else if(m.skill === 'flash'){
-    triggerFlashbang();
-    sfx('flash', 0.5);
-  } else if(m.skill === 'smoke'){
-    spawnSmoke(pos);
-    sfx('smoke', 0.5);
-  } else if(m.skill === 'tp'){
-    sfx('tp', 0.5);
-  }
+  if(m.skill === 'dash') sfx('dash', 0.5);
+  else if(m.skill === 'updraft') sfx('updraft', 0.5);
+  else if(m.skill === 'leer'){ spawnLeer(pos); sfx('leer', 0.5); }
+  else if(m.skill === 'blaze'){ spawnWall(pos, dir); sfx('blaze', 0.5); }
+  else if(m.skill === 'flash'){ triggerFlashbang(); sfx('flash', 0.5); }
+  else if(m.skill === 'smoke'){ spawnSmoke(pos); sfx('smoke', 0.5); }
+  else if(m.skill === 'tp') sfx('tp', 0.5);
 }
 
 function onPlayerKilled(m){
@@ -1320,7 +1284,7 @@ function updateRoster(list){
 
 function respawnLocalPlayer(){
   const sp = SPAWNS[Math.floor(Math.random() * SPAWNS.length)];
-  P.pos.set(sp.x, 0.5, sp.z);
+  P.pos.set(sp.x, 0.6, sp.z);
   P.vel.set(0,0,0);
   P.hp = 100;
   P.shield = 50;
@@ -1330,11 +1294,11 @@ function respawnLocalPlayer(){
   updateWeaponUI();
 }
 
-// ============================================================ COLLISION & PHYSICS
+// ============================================================ CONTINUOUS SUB-STEP COLLISION ENGINE
 function movePlayer(dt){
   if(P.dead) return;
 
-  // Jump pad collision check
+  // Jump pads
   for(const p of pads){
     if(P.pos.x >= p.min.x && P.pos.x <= p.max.x &&
        P.pos.z >= p.min.z && P.pos.z <= p.max.z &&
@@ -1347,7 +1311,7 @@ function movePlayer(dt){
     }
   }
 
-  // Walking & Direction
+  // Input Movement Direction
   const move = V3();
   if(keys['KeyW']) move.z -= 1;
   if(keys['KeyS']) move.z += 1;
@@ -1364,7 +1328,7 @@ function movePlayer(dt){
   P.vel.x += wishDir.x * accel * dt;
   P.vel.z += wishDir.z * accel * dt;
 
-  // Ground friction
+  // Friction & Jump
   if(P.onGround){
     const speed = Math.hypot(P.vel.x, P.vel.z);
     if(speed > 0){
@@ -1384,22 +1348,42 @@ function movePlayer(dt){
     P.vel.y -= gravity * dt;
   }
 
-  // Apply velocity with bounding box collision
-  P.pos.x += P.vel.x * dt;
-  checkCollideAxis('x');
-  P.pos.z += P.vel.z * dt;
-  checkCollideAxis('z');
-  P.pos.y += P.vel.y * dt;
-  P.onGround = false;
-  checkCollideAxis('y');
+  // SUB-STEPPING: Divide frame into micro-steps to completely prevent clipping through walls or out of map!
+  const speedTotal = Math.hypot(P.vel.x, P.vel.y, P.vel.z);
+  const steps = Math.min(8, Math.max(2, Math.ceil(speedTotal * dt / 0.15)));
+  const subDt = dt / steps;
+
+  for(let step = 0; step < steps; step++){
+    P.pos.x += P.vel.x * subDt;
+    resolveCollision('x');
+    P.pos.z += P.vel.z * subDt;
+    resolveCollision('z');
+    P.pos.y += P.vel.y * subDt;
+    P.onGround = false;
+    resolveCollision('y');
+  }
+
+  // Absolute Boundary Clamping: Double-safety so player CAN NEVER leave the arena!
+  if(P.pos.x < -32.5) { P.pos.x = -32.5; P.vel.x = 0; }
+  if(P.pos.x > 32.5) { P.pos.x = 32.5; P.vel.x = 0; }
+  if(P.pos.z < -37.5) { P.pos.z = -37.5; P.vel.z = 0; }
+  if(P.pos.z > 37.5) { P.pos.z = 37.5; P.vel.z = 0; }
+  if(P.pos.y > 21.0) { P.pos.y = 21.0; P.vel.y = 0; }
+
+  // Void Fall Recovery: If ever below ground, instantly respawn safely!
+  if(P.pos.y < -3.0){
+    P.pos.set(0, 1.0, -30);
+    P.vel.set(0, 0, 0);
+  }
 
   P.speed = Math.hypot(P.vel.x, P.vel.z);
   updateVitalsUI();
 }
 
-function checkCollideAxis(axis){
-  const pr = 0.4, ph = 1.8;
-  for(const b of solids){
+function resolveCollision(axis){
+  const pr = 0.42, ph = 1.75;
+  for(let i=0; i<solids.length; i++){
+    const b = solids[i];
     if(P.pos.x + pr > b.min.x && P.pos.x - pr < b.max.x &&
        P.pos.z + pr > b.min.z && P.pos.z - pr < b.max.z &&
        P.pos.y < b.max.y && P.pos.y + ph > b.min.y){
@@ -1413,21 +1397,21 @@ function checkCollideAxis(axis){
           P.vel.y = 0;
         }
       } else if(axis === 'x'){
-        P.pos.x = P.vel.x > 0 ? b.min.x - pr : b.max.x + pr;
+        P.pos.x = (P.vel.x > 0) ? (b.min.x - pr) : (b.max.x + pr);
         P.vel.x = 0;
       } else if(axis === 'z'){
-        P.pos.z = P.vel.z > 0 ? b.min.z - pr : b.max.z + pr;
+        P.pos.z = (P.vel.z > 0) ? (b.min.z - pr) : (b.max.z + pr);
         P.vel.z = 0;
       }
     }
   }
 }
 
-// ============================================================ MOBILE CONTROLS
-const TOUCH = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
-if(TOUCH){
+// ============================================================ ROBUST TOUCH / MOBILE SYSTEM
+// Always enable on touch-capable screens OR screen widths < 1024px
+const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || (window.innerWidth <= 1024);
+if(isMobileDevice){
   document.getElementById('touch').style.display = 'block';
-  document.body.classList.add('mobile-ready');
 }
 
 let joyId = null, joyOrigin = {x:0, y:0};
@@ -1444,7 +1428,7 @@ tjoy.addEventListener('touchstart', e => {
   joybase.style.left = t.clientX + 'px';
   joybase.style.top = t.clientY + 'px';
   joyknob.style.transform = 'translate(0,0)';
-});
+}, {passive: false});
 
 tjoy.addEventListener('touchmove', e => {
   e.preventDefault();
@@ -1452,15 +1436,15 @@ tjoy.addEventListener('touchmove', e => {
     if(t.identifier === joyId){
       let dx = t.clientX - joyOrigin.x, dy = t.clientY - joyOrigin.y;
       const dist = Math.hypot(dx, dy);
-      if(dist > 50){ dx = dx/dist*50; dy = dy/dist*50; }
+      if(dist > 52){ dx = dx/dist*52; dy = dy/dist*52; }
       joyknob.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-      keys['KeyD'] = dx > 15;
-      keys['KeyA'] = dx < -15;
-      keys['KeyS'] = dy > 15;
-      keys['KeyW'] = dy < -15;
+      keys['KeyD'] = dx > 14;
+      keys['KeyA'] = dx < -14;
+      keys['KeyS'] = dy > 14;
+      keys['KeyW'] = dy < -14;
     }
   }
-});
+}, {passive: false});
 
 function endJoy(e){
   for(const t of e.changedTouches){
@@ -1471,55 +1455,72 @@ function endJoy(e){
     }
   }
 }
-tjoy.addEventListener('touchend', endJoy);
-tjoy.addEventListener('touchcancel', endJoy);
+tjoy.addEventListener('touchend', endJoy, {passive: false});
+tjoy.addEventListener('touchcancel', endJoy, {passive: false});
 
-// Look Swipe
+// Swipe to Look (Right Screen Half)
 const tlook = document.getElementById('tlook');
 let lookTouches = new Map();
 tlook.addEventListener('touchstart', e => {
+  e.preventDefault();
   for(const t of e.changedTouches) lookTouches.set(t.identifier, {x: t.clientX, y: t.clientY});
-});
+}, {passive: false});
 tlook.addEventListener('touchmove', e => {
+  e.preventDefault();
   for(const t of e.changedTouches){
     const prev = lookTouches.get(t.identifier);
     if(prev){
       const dx = t.clientX - prev.x, dy = t.clientY - prev.y;
       const s = 0.0035 * sens * (P.zoom ? 0.4 : 1.0);
       P.yaw -= dx * s;
-      P.pitch = Math.max(-1.5, Math.min(1.5, P.pitch - dy * s));
+      P.pitch = Math.max(-1.45, Math.min(1.45, P.pitch - dy * s));
       lookTouches.set(t.identifier, {x: t.clientX, y: t.clientY});
     }
   }
-});
-function endLook(e){ for(const t of e.changedTouches) lookTouches.delete(t.identifier); }
-tlook.addEventListener('touchend', endLook);
-tlook.addEventListener('touchcancel', endLook);
+}, {passive: false});
+function endLook(e){
+  for(const t of e.changedTouches) lookTouches.delete(t.identifier);
+}
+tlook.addEventListener('touchend', endLook, {passive: false});
+tlook.addEventListener('touchcancel', endLook, {passive: false});
 
-// Button Binds
+// Button Binds (Touch & Mouse safe)
 function bindTouchBtn(id, downFn, upFn){
   const el = document.getElementById(id);
-  el.addEventListener('touchstart', e => { e.preventDefault(); el.classList.add('down'); downFn(); });
-  el.addEventListener('touchend', e => { e.preventDefault(); el.classList.remove('down'); if(upFn) upFn(); });
-  el.addEventListener('touchcancel', e => { el.classList.remove('down'); if(upFn) upFn(); });
+  el.addEventListener('touchstart', e => {
+    e.preventDefault();
+    el.classList.add('down');
+    downFn();
+  }, {passive: false});
+  el.addEventListener('touchend', e => {
+    e.preventDefault();
+    el.classList.remove('down');
+    if(upFn) upFn();
+  }, {passive: false});
+  el.addEventListener('touchcancel', e => {
+    el.classList.remove('down');
+    if(upFn) upFn();
+  }, {passive: false});
 }
+
 bindTouchBtn('tfire', () => { mouse.down = true; }, () => { mouse.down = false; });
 bindTouchBtn('tjump', () => { keys['Space'] = true; }, () => { keys['Space'] = false; });
 bindTouchBtn('tslide', () => { keys['ShiftLeft'] = true; }, () => { keys['ShiftLeft'] = false; });
 bindTouchBtn('treload', () => reloadWeapon());
 bindTouchBtn('taim', () => { mouse.rdown = !mouse.rdown; toggleZoom(mouse.rdown); });
+bindTouchBtn('tdash', () => useSkillE());
 bindTouchBtn('t-skill-e', () => useSkillE());
 bindTouchBtn('t-skill-q', () => useSkillQ());
 bindTouchBtn('tsb', () => { document.getElementById('sb').style.display='block'; }, () => { document.getElementById('sb').style.display='none'; });
 bindTouchBtn('tmenu', () => toggleMenu());
 
-// Mobile Weapon Switch Row
+// Mobile Weapon Switch Bar
 const twepBtns = document.querySelectorAll('#twep span');
 twepBtns.forEach((btn, idx) => {
   btn.addEventListener('touchstart', e => {
     e.preventDefault();
     switchWeapon(idx);
-  });
+  }, {passive: false});
 });
 
 // ============================================================ LOBBY & START
@@ -1530,7 +1531,7 @@ function toggleMenu(){
     if(document.exitPointerLock) document.exitPointerLock();
   } else {
     overlay.style.display = 'none';
-    if(!TOUCH) canvas.requestPointerLock();
+    if(!isMobileDevice) canvas.requestPointerLock();
   }
 }
 
@@ -1571,7 +1572,7 @@ document.getElementById('playbtn').addEventListener('click', () => {
   localStorage.setItem('inkrun_name', myName);
   overlay.style.display = 'none';
   if(!joined) connect();
-  if(!TOUCH) canvas.requestPointerLock();
+  if(!isMobileDevice) canvas.requestPointerLock();
 });
 
 // ============================================================ GAME LOOP
@@ -1583,7 +1584,6 @@ function gameLoop(now){
   const dt = Math.min(0.05, (now - lastTime) / 1000);
   lastTime = now;
 
-  // Move player
   movePlayer(dt);
 
   // Update Camera
@@ -1606,10 +1606,8 @@ function gameLoop(now){
     if(!WEAPONS[P.wi].auto) mouse.down = false;
   }
 
-  // Update Skills
   updateSkillsUI(dt);
 
-  // Update Active World Skills
   for(let i=activeSkills.length-1; i>=0; i--){
     if(!activeSkills[i].update(dt)){
       activeSkills[i].remove();
@@ -1624,7 +1622,7 @@ function gameLoop(now){
     r.model.g.rotation.y = r.yaw;
   });
 
-  // Network State Sync (~20hz)
+  // State Sync (~20hz)
   netSendTimer += dt;
   if(netSendTimer >= 0.05 && joined){
     netSendTimer = 0;
@@ -1639,11 +1637,12 @@ function gameLoop(now){
     });
   }
 
-  // Render Viewmodel
+  // Viewmodel position
   vmCamera.aspect = camera.aspect;
   vmCamera.updateProjectionMatrix();
   vmRoot.position.set(0.18, -0.18, -0.35);
 
+  // Double-pass render: Main world + Viewmodel
   renderer.clear();
   renderer.render(scene, camera);
   renderer.clearDepth();
