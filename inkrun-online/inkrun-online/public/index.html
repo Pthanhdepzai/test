@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>INKRUN — Cartoon Arena FPS</title>
 <link href="https://fonts.googleapis.com/css2?family=Bangers&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
@@ -93,6 +93,56 @@
   #sb td:nth-child(n+2),#sb th:nth-child(n+2){text-align:right}
   #sb tr.me td{background:#ffe14a}
   #sb i{display:inline-block;width:14px;height:14px;border:2px solid #111;margin-right:8px;vertical-align:-1px}
+  /* touch controls */
+  html,body{touch-action:none;overscroll-behavior:none}
+  #touch{position:fixed;inset:0;z-index:6;display:none;touch-action:none;-webkit-tap-highlight-color:transparent}
+  #tjoy{position:absolute;left:0;top:0;width:45%;height:100%}
+  #tlook{position:absolute;right:0;top:0;width:55%;height:100%}
+  #joyhint,#joybase{position:absolute;width:110px;height:110px;border:4px solid #111;border-radius:50%;background:rgba(255,255,255,.35);pointer-events:none}
+  #joyhint{left:34px;bottom:34px;opacity:.55}
+  #joybase{display:none;transform:translate(-50%,-50%)}
+  #joyknob{position:absolute;left:50%;top:50%;width:48px;height:48px;border-radius:50%;background:#fff;border:4px solid #111;box-shadow:3px 3px 0 #111;transform:translate(-50%,-50%)}
+  .tb{position:absolute;display:flex;align-items:center;justify-content:center;border:4px solid #111;border-radius:50%;background:#fff;box-shadow:4px 4px 0 #111;font-size:14px;color:#111;line-height:1;text-align:center;user-select:none;-webkit-user-select:none;touch-action:none;opacity:.9}
+  .tb.down,.tb.on{background:#ffe14a;transform:translate(2px,2px);box-shadow:2px 2px 0 #111}
+  #tfire{right:22px;bottom:34px;width:94px;height:94px;background:#ff5d5d;font-size:24px}
+  #tfire.down{background:#ff9a3c}
+  #tjump{right:128px;bottom:18px;width:64px;height:64px;background:#43d9ff;font-size:15px}
+  #tslide,#tdash,#taim,#treload{font-size:12px}
+  #tslide{right:128px;bottom:92px;width:58px;height:58px}
+  #tdash{right:28px;bottom:138px;width:58px;height:58px;background:#c58cff}
+  #taim{display:none;right:100px;bottom:164px;width:50px;height:50px}
+  #treload{right:198px;bottom:54px;width:50px;height:50px}
+  #tmenu,#tsb{top:118px;width:44px;height:44px;font-size:15px;border-radius:12px}
+  #tmenu{left:22px;font-size:22px}
+  #tsb{left:76px}
+  #twep{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);display:flex;gap:6px}
+  #twep span{border:3px solid #111;background:#fff;padding:5px 12px;font-size:16px;box-shadow:3px 3px 0 #111;opacity:.85;user-select:none;-webkit-user-select:none}
+  #twep span.on{background:#ffe14a;opacity:1}
+  #twep span.down{transform:translate(2px,2px)}
+  #touchhelp{display:none}
+  #rotate{display:none;position:fixed;inset:0;z-index:20;background:#111;color:#ffe14a;align-items:center;justify-content:center;text-align:center;font-size:34px;padding:30px;-webkit-text-stroke:1px #000}
+  body.touch #touchhelp{display:block}
+  body.touch .keys,body.touch .card>p.combo{display:none}
+  body.touch .card{padding:14px 22px;max-height:96%;overflow-y:auto;transform:none;box-shadow:8px 8px 0 #111}
+  body.touch .card h1{font-size:42px}
+  body.touch .btn{font-size:26px;margin-top:6px}
+  body.touch #wlist{display:none}
+  body.touch #top{font-size:19px;top:8px}
+  body.touch #streak{font-size:15px;top:10px;left:14px}
+  body.touch #net{font-size:13px;top:62px;left:14px}
+  body.touch #feed{font-size:14px;top:10px;right:12px}
+  body.touch #pop{font-size:40px}
+  body.touch #msg{font-size:22px}
+  body.touch #hp{left:50%;bottom:50px;transform:translateX(-50%)}
+  body.touch #hpbar{width:170px;height:22px}
+  body.touch #hpnum{font-size:30px}
+  body.touch #ammo{left:50%;right:auto;bottom:92px;transform:translateX(-50%);text-align:center}
+  body.touch #ammonum{font-size:40px}
+  body.touch #wname{font-size:15px}
+  body.touch #speedbox{bottom:auto;top:52px}
+  body.touch #spd{display:none}
+  body.touch.playing #rotate{display:none}
+  @media (orientation:portrait){ body.touch.playing #rotate{display:flex} }
 </style>
 </head>
 <body>
@@ -118,6 +168,21 @@
   <div id="sb" class="panel"></div>
 </div>
 
+<div id="touch">
+  <div id="tjoy"></div><div id="tlook"></div>
+  <div id="joyhint"></div><div id="joybase"><div id="joyknob"></div></div>
+  <div class="tb" id="tfire">FIRE</div>
+  <div class="tb" id="tjump">NHẢY</div>
+  <div class="tb" id="tslide">TRƯỢT</div>
+  <div class="tb" id="tdash">DASH</div>
+  <div class="tb" id="taim">NGẮM</div>
+  <div class="tb" id="treload">NẠP</div>
+  <div class="tb" id="tmenu">☰</div>
+  <div class="tb" id="tsb">K/D</div>
+  <div id="twep"><span class="on">AK</span><span>SG</span><span>SMG</span><span>SNP</span></div>
+</div>
+<div id="rotate">XOAY NGANG ĐIỆN THOẠI ĐỂ CHƠI</div>
+
 <div id="death"><div class="panel">WRECKED!<small id="deathsub">hồi sinh sau 2.5s</small></div></div>
 
 <div id="overlay">
@@ -131,7 +196,8 @@
       <div><b>1-4 / LĂN</b> đổi súng</div><div><b>R</b> nạp đạn • <b>Q</b> súng trước</div>
       <div><b>TAB</b> bảng điểm</div><div><b>ESC</b> mở menu (trận vẫn chạy!)</div>
     </div>
-    <p>Combo: <b>slide → jump</b> giữ tốc, <b>dash → jump</b> bay xa, air-strafe (A/D + kéo chuột) khi bhop để tăng tốc, jump pad vàng phóng lên tầng cao. Đứng yên = chết. Vào cùng một <b>tên phòng</b> để chơi chung với bạn.</p>
+    <p class="combo">Combo: <b>slide → jump</b> giữ tốc, <b>dash → jump</b> bay xa, air-strafe (A/D + kéo chuột) khi bhop để tăng tốc, jump pad vàng phóng lên tầng cao. Đứng yên = chết. Vào cùng một <b>tên phòng</b> để chơi chung với bạn.</p>
+    <p id="touchhelp"><b>Cảm ứng:</b> cần bên trái để chạy • kéo bên phải để nhìn • nút đỏ FIRE để bắn (giữ rồi kéo để vừa bắn vừa ngắm) • <b>xoay ngang điện thoại</b> để chơi.</p>
     <div class="row lobby">
       <label>Tên <input id="pname" maxlength="14" placeholder="Tên của bạn" autocomplete="off" spellcheck="false"></label>
       <label>Phòng <input id="proom" maxlength="16" placeholder="main" autocomplete="off" spellcheck="false"></label>
@@ -143,7 +209,7 @@
     <div class="btn" id="playbtn">VÀO TRẬN</div>
     <p id="netstatus"></p>
     <p id="invite"></p>
-    <p style="margin-top:8px;font-size:12px;color:#777">ESC mở menu • trận vẫn chạy khi bạn mở menu, coi chừng bị bắn</p>
+    <p id="hint" style="margin-top:8px;font-size:12px;color:#777">ESC mở menu • trận vẫn chạy khi bạn mở menu, coi chừng bị bắn</p>
   </div>
 </div>
 
@@ -156,6 +222,8 @@ const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const lerp=(a,b,t)=>a+(b-a)*t;
 const V3=(x=0,y=0,z=0)=>new T.Vector3(x,y,z);
 const DEG=Math.PI/180;
+const TOUCH=(window.matchMedia&&matchMedia('(pointer:coarse)').matches)||/[?&]touch=1/.test(location.search);
+if(TOUCH)document.body.classList.add('touch');
 const wrapAngle=a=>{while(a>Math.PI)a-=Math.PI*2;while(a<-Math.PI)a+=Math.PI*2;return a;};
 const lerpAngle=(a,b,t)=>a+wrapAngle(b-a)*t;
 const distXZ=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
@@ -186,8 +254,8 @@ function sfx(n,v=1){ switch(n){
 } }
 
 // ============================================================ RENDERER / SCENE
-const renderer=new T.WebGLRenderer({antialias:true,powerPreference:'high-performance'});
-renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));
+const renderer=new T.WebGLRenderer({antialias:!TOUCH,powerPreference:'high-performance'});
+renderer.setPixelRatio(TOUCH?1:Math.min(devicePixelRatio,1.5));
 renderer.setSize(innerWidth,innerHeight);
 renderer.domElement.id='gl';
 document.body.prepend(renderer.domElement);
@@ -205,7 +273,7 @@ const vmCam=new T.PerspectiveCamera(62,innerWidth/innerHeight,0.01,20);
 
 const hemi=new T.HemisphereLight(0xffffff,0x96a4b8,0.55); scene.add(hemi);
 const sun=new T.DirectionalLight(0xffffff,1.0); sun.position.set(45,80,30); sun.castShadow=true;
-sun.shadow.mapSize.set(2048,2048); const sc=sun.shadow.camera; sc.left=-62; sc.right=62; sc.top=62; sc.bottom=-62; sc.near=10; sc.far=220; sun.shadow.bias=-0.0006; sun.shadow.normalBias=0.06;
+sun.shadow.mapSize.set(TOUCH?1024:2048,TOUCH?1024:2048); const sc=sun.shadow.camera; sc.left=-62; sc.right=62; sc.top=62; sc.bottom=-62; sc.near=10; sc.far=220; sun.shadow.bias=-0.0006; sun.shadow.normalBias=0.06;
 scene.add(sun); scene.add(sun.target);
 vmScene.add(new T.HemisphereLight(0xffffff,0x8899aa,0.7));
 const vmSun=new T.DirectionalLight(0xffffff,0.9); vmSun.position.set(1,2,1); vmScene.add(vmSun);
@@ -396,7 +464,7 @@ function respawnPlayer(){ let best=null,bd=-1; for(const s of SPAWNS){ let md=1e
 
 // weapons logic
 function startReload(){ const w=WEAPONS[P.wi],st=P.wst[P.wi]; if(st.reloading||st.ammo===w.mag)return; st.reloading=true; st.reloadT=w.reload; sfx('reload'); showMsg('RELOADING…'); }
-function switchWeapon(i){ if(i===P.wi||P.dead)return; P.wst[P.wi].reloading=false; P.lastWi=P.wi; P.wi=i; P.switchT=0.3; vmGroups.forEach((g,k)=>g.visible=k===i); sfx('switch'); const w=WEAPONS[i]; document.getElementById('wname').textContent=w.name; [...document.getElementById('wlist').children].forEach((el,k)=>el.classList.toggle('on',k===i)); }
+function switchWeapon(i){ if(i===P.wi||P.dead)return; P.wst[P.wi].reloading=false; P.lastWi=P.wi; P.wi=i; P.switchT=0.3; vmGroups.forEach((g,k)=>g.visible=k===i); sfx('switch'); const w=WEAPONS[i]; document.getElementById('wname').textContent=w.name; [...document.getElementById('twep').children].forEach((el,k)=>el.classList.toggle('on',k===i)); if(TOUCH){ mouse.rdown=false; const ab=document.getElementById('taim'); ab.classList.remove('on'); ab.style.display=w.zoom?'flex':'none'; } [...document.getElementById('wlist').children].forEach((el,k)=>el.classList.toggle('on',k===i)); }
 function curSpread(w){ let s=(P.zoom&&w.zoom)?w.zoomSpread:w.spread; s+=w.moveSpread*clamp(hspeed()/12,0,1.5); if(!P.body.onGround)s+=w.moveSpread*0.8; if(P.sliding)s*=0.7; return s; }
 function fireWeapon(w,st){ st.ammo--; st.nextFire=60/w.rpm; const origin=playerEye(); const base=V3(); camera.getWorldDirection(base); const right=V3(1,0,0).applyQuaternion(camera.quaternion),up=V3(0,1,0).applyQuaternion(camera.quaternion); const muzzle=origin.clone().addScaledVector(right,0.28).addScaledVector(up,-0.2).addScaledVector(base,0.7); const sp=curSpread(w)*DEG; let hits=0,head=false; const dealt=new Map(),ends=[];
   for(let i=0;i<w.pellets;i++){ const dir=spreadDir(base,sp); let t=250; const hw=rayWorld(origin,dir,t); if(hw)t=hw.t; let hb=null,hh=false; for(const r of remotes.values()){ if(r.dead||!r.init)continue; const rr=rayHumanoid(origin,dir,r.body.pos,1.62*(r.sl?0.62:1),t); if(rr){t=rr.t;hb=r;hh=rr.head;} } const hp=origin.clone().addScaledVector(dir,t); ends.push(Math.round(hp.x*100)/100,Math.round(hp.y*100)/100,Math.round(hp.z*100)/100); tracer(muzzle,hp,w.tracer,w.tracerW,w.tracerLife);
@@ -518,16 +586,56 @@ function updateCamera(dt){ const b=P.body; const tH=P.dead?0.35:(P.sliding?0.95:
 
 // ============================================================ INPUT
 const overlay=$('overlay'),card=$('card'); const glc=renderer.domElement;
-function lock(){ initAudio(); if(document.activeElement&&document.activeElement.blur)document.activeElement.blur(); try{ const r=glc.requestPointerLock(); if(r&&r.catch)r.catch(()=>{}); }catch(e){} }
+function lock(){ initAudio(); if(document.activeElement&&document.activeElement.blur)document.activeElement.blur(); if(TOUCH){ enterTouch(); return; } try{ const r=glc.requestPointerLock(); if(r&&r.catch)r.catch(()=>{}); }catch(e){} }
 card.addEventListener('click',e=>{ if(e.target.closest('input,label,#invite'))return; startPlay(); });
 $('sens').addEventListener('input',e=>sens=parseFloat(e.target.value)); $('fov').addEventListener('input',e=>baseFov=parseFloat(e.target.value));
 document.addEventListener('pointerlockchange',()=>{ const locked=document.pointerLockElement===glc; running=locked; overlay.style.display=locked?'none':'flex'; if(!locked){ $('sb').style.display='none'; $('playbtn').textContent=joined?'TIẾP TỤC':'VÀO TRẬN'; for(const k in keys)keys[k]=false; mouse.down=mouse.rdown=false; P.jumpHeld=P.slideHeld=false; } else if(!started){ started=true; popMsg('GO GO GO!'); } });
 let started=false;
-document.addEventListener('mousemove',e=>{ if(!running)return; const s=0.0022*sens*(P.zoom?0.4:1); P.yaw-=e.movementX*s; P.pitch-=e.movementY*s; P.pitch=clamp(P.pitch,-89*DEG,89*DEG); mouse.dx+=e.movementX; mouse.dy+=e.movementY; });
-document.addEventListener('mousedown',e=>{ if(!running)return; if(e.button===0){ mouse.down=true; mouse.fired=false; } if(e.button===2)mouse.rdown=true; });
-document.addEventListener('mouseup',e=>{ if(e.button===0)mouse.down=false; if(e.button===2)mouse.rdown=false; });
+
+// ============================================================ TOUCH CONTROLS (điện thoại)
+let joyId=null,jx0=0,jy0=0; const tLooks=new Map();
+function enterTouch(){ running=true; overlay.style.display='none'; $('touch').style.display='block'; document.body.classList.add('playing'); if(!started){ started=true; popMsg('GO GO GO!'); }
+  try{ const d=document.documentElement; if(d.requestFullscreen&&!document.fullscreenElement) d.requestFullscreen({navigationUI:'hide'}).then(()=>{ try{ screen.orientation.lock('landscape').catch(()=>{}); }catch(e){} }).catch(()=>{}); }catch(e){} }
+function exitTouch(){ running=false; overlay.style.display='flex'; $('touch').style.display='none'; document.body.classList.remove('playing'); for(const k in keys)keys[k]=false; mouse.down=mouse.rdown=false; P.jumpHeld=P.slideHeld=false; joyId=null; tLooks.clear(); $('joybase').style.display='none'; $('sb').style.display='none'; $('taim').classList.remove('on'); $('tfire').classList.remove('down'); $('playbtn').textContent=joined?'TIẾP TỤC':'VÀO TRẬN'; }
+function touchInit(){
+  const base=$('joybase'),knob=$('joyknob'),R=55,opt={passive:false};
+  const setKeys=(vx,vy)=>{ keys.KeyD=vx>0.3; keys.KeyA=vx<-0.3; keys.KeyS=vy>0.3; keys.KeyW=vy<-0.3; };
+  const look=(dx,dy)=>{ const s=0.0045*sens*(P.zoom?0.4:1); P.yaw-=dx*s; P.pitch=clamp(P.pitch-dy*s,-89*DEG,89*DEG); mouse.dx+=dx; mouse.dy+=dy; };
+  // cần chạy (nửa trái màn hình): chạm ở đâu, cần hiện ở đó
+  const zj=$('tjoy');
+  zj.addEventListener('touchstart',e=>{ e.preventDefault(); if(!running||joyId!==null)return; const t=e.changedTouches[0]; joyId=t.identifier; jx0=t.clientX; jy0=t.clientY; base.style.display='block'; base.style.left=jx0+'px'; base.style.top=jy0+'px'; knob.style.transform='translate(-50%,-50%)'; },opt);
+  zj.addEventListener('touchmove',e=>{ e.preventDefault(); for(const t of e.changedTouches){ if(t.identifier!==joyId)continue; let dx=t.clientX-jx0,dy=t.clientY-jy0; const l=Math.hypot(dx,dy); if(l>R){ dx=dx/l*R; dy=dy/l*R; } knob.style.transform='translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px))'; setKeys(dx/R,dy/R); } },opt);
+  const joyEnd=e=>{ e.preventDefault(); for(const t of e.changedTouches){ if(t.identifier!==joyId)continue; joyId=null; base.style.display='none'; setKeys(0,0); } };
+  zj.addEventListener('touchend',joyEnd,opt); zj.addEventListener('touchcancel',joyEnd,opt);
+  // kéo để nhìn (nửa phải màn hình + kéo từ nút FIRE cũng xoay được)
+  const lookOn=(el,onStart,onEnd)=>{
+    el.addEventListener('touchstart',e=>{ e.preventDefault(); if(!running)return; for(const t of e.changedTouches){ tLooks.set(t.identifier,{x:t.clientX,y:t.clientY}); if(onStart)onStart(); } },opt);
+    el.addEventListener('touchmove',e=>{ e.preventDefault(); for(const t of e.changedTouches){ const l=tLooks.get(t.identifier); if(!l)continue; look(t.clientX-l.x,t.clientY-l.y); l.x=t.clientX; l.y=t.clientY; } },opt);
+    const end=e=>{ e.preventDefault(); for(const t of e.changedTouches){ if(tLooks.delete(t.identifier)&&onEnd)onEnd(); } };
+    el.addEventListener('touchend',end,opt); el.addEventListener('touchcancel',end,opt); };
+  lookOn($('tlook'));
+  lookOn($('tfire'),()=>{ mouse.down=true; mouse.fired=false; $('tfire').classList.add('down'); },()=>{ mouse.down=false; $('tfire').classList.remove('down'); });
+  // nút giữ / nút bấm
+  const hold=(id,down,up)=>{ const el=$(id); el.addEventListener('touchstart',e=>{ e.preventDefault(); if(!running)return; el.classList.add('down'); down(); },opt); const off=e=>{ e.preventDefault(); el.classList.remove('down'); up(); }; el.addEventListener('touchend',off,opt); el.addEventListener('touchcancel',off,opt); };
+  const tap=(id,fn)=>hold(id,fn,()=>{});
+  hold('tjump',()=>{ P.jumpHeld=true; },()=>{ P.jumpHeld=false; });
+  hold('tslide',()=>{ P.slideHeld=true; },()=>{ P.slideHeld=false; });
+  hold('tsb',()=>{ $('sb').style.display='block'; },()=>{ $('sb').style.display='none'; });
+  tap('tdash',()=>dash());
+  tap('treload',()=>startReload());
+  tap('taim',()=>{ mouse.rdown=!mouse.rdown; $('taim').classList.toggle('on',mouse.rdown); });
+  tap('tmenu',()=>exitTouch());
+  [...$('twep').children].forEach((b,i)=>{ b.addEventListener('touchstart',e=>{ e.preventDefault(); if(!running)return; b.classList.add('down'); switchWeapon(i); },opt); const off=e=>{ e.preventDefault(); b.classList.remove('down'); }; b.addEventListener('touchend',off,opt); b.addEventListener('touchcancel',off,opt); });
+  $('hint').textContent='Bấm nút ☰ trên màn hình để mở menu • trận vẫn chạy khi mở menu, coi chừng bị bắn';
+  // chạm vào menu thì không bị cuộn trang
+  overlay.addEventListener('touchmove',e=>{ if(!e.target.closest('.card'))e.preventDefault(); },opt);
+}
+
+document.addEventListener('mousemove',e=>{ if(!running||TOUCH)return; const s=0.0022*sens*(P.zoom?0.4:1); P.yaw-=e.movementX*s; P.pitch-=e.movementY*s; P.pitch=clamp(P.pitch,-89*DEG,89*DEG); mouse.dx+=e.movementX; mouse.dy+=e.movementY; });
+document.addEventListener('mousedown',e=>{ if(!running||TOUCH)return; if(e.button===0){ mouse.down=true; mouse.fired=false; } if(e.button===2)mouse.rdown=true; });
+document.addEventListener('mouseup',e=>{ if(TOUCH)return; if(e.button===0)mouse.down=false; if(e.button===2)mouse.rdown=false; });
 document.addEventListener('contextmenu',e=>e.preventDefault());
-document.addEventListener('wheel',e=>{ if(!running)return; switchWeapon((P.wi+(e.deltaY>0?1:3))%4); },{passive:true});
+document.addEventListener('wheel',e=>{ if(!running||TOUCH)return; switchWeapon((P.wi+(e.deltaY>0?1:3))%4); },{passive:true});
 document.addEventListener('keydown',e=>{ if(e.target&&e.target.type==='text')return; if(['Space','Tab','ControlLeft','ShiftLeft','KeyW','KeyA','KeyS','KeyD'].includes(e.code))e.preventDefault(); if(e.repeat)return; keys[e.code]=true; if(!running)return;
   switch(e.code){ case 'Space': P.jumpHeld=true; break; case 'ShiftLeft': case 'ShiftRight': dash(); break; case 'KeyC': case 'ControlLeft': P.slideHeld=true; break; case 'KeyR': startReload(); break; case 'Digit1': switchWeapon(0); break; case 'Digit2': switchWeapon(1); break; case 'Digit3': switchWeapon(2); break; case 'Digit4': switchWeapon(3); break; case 'KeyQ': switchWeapon(P.lastWi); break; case 'Tab': $('sb').style.display='block'; break; } });
 document.addEventListener('keyup',e=>{ keys[e.code]=false; if(e.code==='Tab')$('sb').style.display='none'; if(e.code==='Space')P.jumpHeld=false; if(e.code==='KeyC'||e.code==='ControlLeft')P.slideHeld=false; });
@@ -540,6 +648,7 @@ P.body.pos.set(0,4.05,6); P.yaw=Math.PI;
   for(const id of ['pname','proom']) $(id).addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); startPlay(); } });
   $('invite').addEventListener('click',()=>{ const u=$('invite').dataset.url; if(u&&navigator.clipboard) navigator.clipboard.writeText(u).then(()=>setStatus('Đã copy link mời — gửi cho bạn bè nhé!','ok')).catch(()=>{}); }); })();
 setInterval(()=>{ if(joined)netSend({t:'p',ts:Date.now()}); },2000);
+if(TOUCH)touchInit();
 let last=performance.now();
 function loop(now){ requestAnimationFrame(loop); let dt=Math.min(0.05,(now-last)/1000); last=now;
   if(joined){ time+=dt; updatePlayer(dt); updateWeapon(dt); updateRemotes(dt); updateEffects(dt); updateCamera(dt); updateHUD(dt); updateNet(dt); drawSpeedLines(); mouse.dx=mouse.dy=0; }
