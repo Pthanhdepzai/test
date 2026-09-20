@@ -1502,10 +1502,11 @@ tlook.addEventListener('touchcancel', endLook, {passive: false});
 // Button Binds (Touch & Mouse safe)
 function bindTouchBtn(id, downFn, upFn){
   const el = document.getElementById(id);
+  if(!el) return; // Null-safe protection
   el.addEventListener('touchstart', e => {
     e.preventDefault();
     el.classList.add('down');
-    downFn();
+    if(downFn) downFn();
   }, {passive: false});
   el.addEventListener('touchend', e => {
     e.preventDefault();
@@ -1520,10 +1521,9 @@ function bindTouchBtn(id, downFn, upFn){
 
 bindTouchBtn('tfire', () => { mouse.down = true; }, () => { mouse.down = false; });
 bindTouchBtn('tjump', () => { keys['Space'] = true; }, () => { keys['Space'] = false; });
-bindTouchBtn('tslide', () => { keys['ShiftLeft'] = true; }, () => { keys['ShiftLeft'] = false; });
+bindTouchBtn('tcrouch', () => { P.crouching = true; }, () => { P.crouching = false; });
 bindTouchBtn('treload', () => reloadWeapon());
 bindTouchBtn('taim', () => { mouse.rdown = !mouse.rdown; toggleZoom(mouse.rdown); });
-bindTouchBtn('tdash', () => useSkillE());
 bindTouchBtn('t-skill-e', () => useSkillE());
 bindTouchBtn('t-skill-q', () => useSkillQ());
 bindTouchBtn('tsb', () => { document.getElementById('sb').style.display='block'; }, () => { document.getElementById('sb').style.display='none'; });
