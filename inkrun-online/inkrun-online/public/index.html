@@ -618,10 +618,10 @@ const GFX = (()=>{ let q = null; try{ q = localStorage.getItem('ir_gfx'); }catch
   return q; })();
 const canvas = document.getElementById('c');
 const renderer = new T.WebGLRenderer({ canvas, antialias:true, powerPreference:'high-performance' });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, GFX==='high' ? 2 : 1.25));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio||1, GFX==='high' ? 1.5 : 1.25));
 renderer.setSize(innerWidth, innerHeight);
 renderer.toneMapping = T.ACESFilmicToneMapping;
-renderer.toneMappingExposure = GFX==='high' ? 1.12 : 1.06;
+renderer.toneMappingExposure = GFX==='high' ? 1.14 : 1.06;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = T.PCFSoftShadowMap;
 renderer.autoClear = false;
@@ -669,33 +669,22 @@ const SUN_DIR = new T.Vector3(26, 54, 18).normalize();
   }
 })();
 
-scene.add(new T.HemisphereLight(0xdcefff, 0x4a5158, GFX==='high' ? .8 : .95));
-scene.add(new T.AmbientLight(0xcfe0f5, GFX==='high' ? .3 : .38));
+scene.add(new T.HemisphereLight(0xdcefff, 0x4a5158, .95));
+scene.add(new T.AmbientLight(0xcfe0f5, .38));
 const sun = new T.DirectionalLight(0xfff3d8, 1.35);
 sun.position.set(26, 54, 18); sun.castShadow = true;
-sun.shadow.mapSize.set(GFX==='high'?2048:1024, GFX==='high'?2048:1024);
+sun.shadow.mapSize.set(GFX==='high'?1536:1024, GFX==='high'?1536:1024);
 sun.shadow.camera.left=-46; sun.shadow.camera.right=46; sun.shadow.camera.top=46; sun.shadow.camera.bottom=-46;
 sun.shadow.camera.far = 130; sun.shadow.bias = -0.0009;
 scene.add(sun);
 const fill = new T.DirectionalLight(0x74b4ff, .34); fill.position.set(-30,22,-26); scene.add(fill);
 const vmSun = new T.DirectionalLight(0xffffff, 1.45); vmSun.position.set(1.6,3.4,2.2); vmScene.add(vmSun);
 vmScene.add(new T.AmbientLight(0x9fb4d0, .95));
-// môi trường phản chiếu (PMREM) từ bầu trời -> kim loại, sàn bóng, súng nhìn "thật" hơn
-let ENV = null;
-if(GFX === 'high'){ try{
-  const es = new T.Scene();
-  const emat = new T.ShaderMaterial({ side:T.BackSide, depthWrite:false, uniforms:{ top:{value:new T.Color(0x2a5aa8)}, bot:{value:new T.Color(0xdfeaf4)}, sunDir:{value:SUN_DIR.clone()} },
-    vertexShader:'varying vec3 vd;void main(){vd=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',
-    fragmentShader:'varying vec3 vd;uniform vec3 top;uniform vec3 bot;uniform vec3 sunDir;void main(){vec3 d=normalize(vd);float t=clamp(d.y*.9+.32,0.,1.);vec3 c=mix(bot,top,pow(t,1.35));float s=max(dot(d,sunDir),0.);c+=vec3(1.,.9,.7)*(pow(s,48.)*2.2+pow(s,5.)*.25);if(d.y<0.)c=mix(c,vec3(.32,.31,.30),clamp(-d.y*2.,0.,1.));gl_FragColor=vec4(c,1.);}' });
-  es.add(new T.Mesh(new T.SphereGeometry(50, 32, 16), emat));
-  const pm = new T.PMREMGenerator(renderer);
-  ENV = pm.fromScene(es, 0, .1, 200).texture; pm.dispose();
-  scene.environment = ENV; vmScene.environment = ENV;
-}catch(e){ ENV = null; console.warn('env map lỗi, bỏ qua', e); } }
+let ENV = null; // không dùng PMREM/IBL: bản trước làm mọi bề mặt bị đen
 
 // tô màu hoạt hình: Lambert + outline
 const toon = c => GFX==='high'
-  ? new T.MeshStandardMaterial({ color:c, flatShading:true, roughness:.8, metalness:.08, envMapIntensity:.55 })
+  ? new T.MeshPhongMaterial({ color:c, flatShading:true, shininess:16, specular:0x1c1c1c })
   : new T.MeshLambertMaterial({ color:c, flatShading:true });
 function outline(mesh, col=0x0c1218, th=1){
   const e = new T.LineSegments(new T.EdgesGeometry(mesh.geometry), new T.LineBasicMaterial({ color:col, transparent:true, opacity:.85 }));
@@ -865,20 +854,20 @@ const G_KIND = {}; G_KIND[MC.ground]='concrete'; G_KIND[MC.sand]='sand'; G_KIND[
 G_KIND[MC.crate]='crate'; G_KIND[MC.crate2]='crate'; G_KIND[MC.metal]='metal'; G_KIND[MC.dark]='metal';
 G_KIND[MC.siteA]='floor'; G_KIND[MC.siteB]='floor'; G_KIND[MC.plant]='floor'; G_KIND[MC.glow]='glow';
 const gr = (a,b) => a + Math.random()*(b-a);
+let G_NOISE = true;
 function gTex(size, draw){
   const c = document.createElement('canvas'); c.width = c.height = size; const x = c.getContext('2d'); draw(x, size);
   const t = new T.CanvasTexture(c); t.wrapS = t.wrapT = T.RepeatWrapping;
   try{ t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy()); }catch(e){}
   return t;
 }
-function gGrain(x,s,n,a){ for(let i=0;i<n;i++){ x.fillStyle = Math.random()>.5 ? 'rgba(255,255,255,'+(a*Math.random()).toFixed(3)+')' : 'rgba(0,0,0,'+(a*Math.random()).toFixed(3)+')'; x.fillRect(Math.random()*s, Math.random()*s, 1+Math.random()*2, 1+Math.random()*2); } }
-function gBlotch(x,s,n,a){ for(let i=0;i<n;i++){ const px=Math.random()*s, py=Math.random()*s, r=s*(.08+Math.random()*.2), dark=Math.random()>.5;
+function gGrain(x,s,n,a){ if(!G_NOISE) return; for(let i=0;i<n;i++){ x.fillStyle = Math.random()>.5 ? 'rgba(255,255,255,'+(a*Math.random()).toFixed(3)+')' : 'rgba(0,0,0,'+(a*Math.random()).toFixed(3)+')'; x.fillRect(Math.random()*s, Math.random()*s, 1+Math.random()*2, 1+Math.random()*2); } }
+function gBlotch(x,s,n,a){ if(!G_NOISE) return; for(let i=0;i<n;i++){ const px=Math.random()*s, py=Math.random()*s, r=s*(.08+Math.random()*.2), dark=Math.random()>.5;
   for(const ox of [-s,0,s]) for(const oy of [-s,0,s]){ const g = x.createRadialGradient(px+ox,py+oy,0,px+ox,py+oy,r); g.addColorStop(0, dark?'rgba(0,0,0,'+a+')':'rgba(255,255,255,'+a+')'); g.addColorStop(1,'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(px+ox-r,py+oy-r,r*2,r*2); } } }
 function gLines(x,s,pos,horiz,vert){ x.beginPath(); for(const p of pos){ if(vert){ x.moveTo(p,0); x.lineTo(p,s); } if(horiz){ x.moveTo(0,p); x.lineTo(s,p); } } x.stroke(); }
 function gRivet(x,cx,cy){ x.fillStyle='rgba(0,0,0,.42)'; x.beginPath(); x.arc(cx,cy,4,0,6.283); x.fill(); x.fillStyle='rgba(255,255,255,.4)'; x.beginPath(); x.arc(cx-1,cy-1,2,0,6.283); x.fill(); }
 const G_TEX = {};
-function gTexture(kind){
-  if(G_TEX[kind]) return G_TEX[kind];
+function gTextureBuild(kind){
   let t = null;
   if(kind === 'concrete' || kind === 'sand') t = gTex(512,(x,s)=>{
     x.fillStyle = kind==='sand' ? '#f3ebd8' : '#efeeea'; x.fillRect(0,0,s,s); gBlotch(x,s,16,.07); gGrain(x,s,5200,.1);
@@ -918,18 +907,20 @@ function gTexture(kind){
     x.fillStyle='#f4f4f4'; x.fillRect(0,0,s,s); gBlotch(x,s,14,.07); const g=s/4;
     x.strokeStyle='rgba(255,255,255,.16)'; x.lineWidth=10; for(let k=-s;k<s*2;k+=64){ x.beginPath(); x.moveTo(k,0); x.lineTo(k+s,s); x.stroke(); }
     x.strokeStyle='rgba(0,0,0,.2)'; x.lineWidth=2; gLines(x,s,[0,g,2*g,3*g],true,true); gGrain(x,s,4000,.09); });
-  G_TEX[kind] = t; return t;
+  return t;
 }
+function gTexture(kind, bump){ const key = kind + (bump ? '#b' : ''); if(G_TEX[key]) return G_TEX[key]; G_NOISE = !bump; const t = gTextureBuild(kind); G_NOISE = true; G_TEX[key] = t; return t; }
 const G_MAT = {};
 function gMapMat(color){
   const kind = G_KIND[color]; const key = kind+'|'+color;
   if(G_MAT[key]) return G_MAT[key];
   let m;
   if(!kind) m = toon(color);
-  else if(kind === 'glow') m = new T.MeshStandardMaterial({ color, emissive:color, emissiveIntensity:1.3, roughness:.4, metalness:0 });
+  else if(kind === 'glow') m = new T.MeshBasicMaterial({ color });
   else {
-    const p = { concrete:[.95,0], sand:[.96,0], wall:[.85,.1], panel:[.9,.05], stone:[.92,0], crate:[.75,0], metal:[.4, ENV?.7:.25], floor:[.55,.05] }[kind];
-    m = new T.MeshStandardMaterial({ color, map:gTexture(kind), roughness:p[0], metalness:p[1], flatShading:true, envMapIntensity:.6 });
+    // [độ bóng, màu phản xạ, độ nổi của bump]
+    const p = { concrete:[8,0x151515,.35], sand:[6,0x121212,.3], wall:[20,0x2a3038,.45], panel:[14,0x222222,.4], stone:[6,0x121212,.7], crate:[10,0x1a1410,.6], metal:[70,0x8899aa,.35], floor:[42,0x3a3a3a,.3] }[kind];
+    m = new T.MeshPhongMaterial({ color, map:gTexture(kind), bumpMap:gTexture(kind,true), bumpScale:p[2], shininess:p[0], specular:p[1], flatShading:true });
   }
   G_MAT[key] = m; return m;
 }
@@ -950,12 +941,61 @@ function gDecal(text, x, y, z, w, d, color){
 }
 function gDust(){
   const n = 420, pos = new Float32Array(n*3);
-  for(let i=0;i<n;i++){ pos[i*3]=gr(-30,30); pos[i*3+1]=gr(.5,12); pos[i*3+2]=gr(-34,34); }
+  for(let i=0;i<n;i++){ pos[i*3]=gr(-30,30); pos[i*3+1]=gr(.5,8); pos[i*3+2]=gr(-34,34); }
   const g = new T.BufferGeometry(); g.setAttribute('position', new T.BufferAttribute(pos,3));
-  const p = new T.Points(g, new T.PointsMaterial({ color:0xfff1cf, size:.07, transparent:true, opacity:.55, depthWrite:false, blending:T.AdditiveBlending, sizeAttenuation:true }));
+  const p = new T.Points(g, new T.PointsMaterial({ color:0xfff1cf, size:.05, transparent:true, opacity:.4, depthWrite:false, blending:T.AdditiveBlending, sizeAttenuation:true }));
   p.frustumCulled = false;
   p.onBeforeRender = () => { const t = performance.now()/1000; p.position.y = Math.sin(t*.25)*.35; p.position.x = Math.sin(t*.13)*.6; p.rotation.y = t*.012; };
   scene.add(p);
+}
+// bóng đổ tiếp xúc (ambient occlusion giả) quanh chân tường/thùng: gộp thành 1 mesh
+function gFloorTop(x,z){
+  const ax = Math.abs(x), az = Math.abs(z);
+  if(ax > 11 && ax < 29 && az < 13) return .52;            // sàn site
+  if(ax < 11 && az < 15) return .52;                         // bục giữa
+  if(ax < 13 && az > 22.5 && az < 32.5) return .52;          // spawn
+  return .07;
+}
+function gAO(){
+  const pos = [], uv = [], idx = []; let vi = 0; const W = 1.15;
+  const quad = (ax,az,bx,bz,nx,nz,y) => { pos.push(ax,y,az, bx,y,bz, bx+nx*W,y,bz+nz*W, ax+nx*W,y,az+nz*W); uv.push(0,0, 1,0, 1,1, 0,1); idx.push(vi,vi+1,vi+2, vi,vi+2,vi+3); vi += 4; };
+  for(const bx of visBoxes){
+    if(bx.pad || bx.o.solid === false) continue;
+    const h = bx.max.y-bx.min.y; if(h < 1.1 || bx.min.y > .6 || bx.max.y >= WALLH) continue;
+    const x0 = bx.min.x, x1 = bx.max.x, z0 = bx.min.z, z1 = bx.max.z, y = gFloorTop((x0+x1)/2, (z0+z1)/2);
+    quad(x0,z0,x1,z0,0,-1,y); quad(x1,z1,x0,z1,0,1,y); quad(x0,z1,x0,z0,-1,0,y); quad(x1,z0,x1,z1,1,0,y);
+  }
+  const g = new T.BufferGeometry();
+  g.setAttribute('position', new T.BufferAttribute(new Float32Array(pos),3)); g.setAttribute('uv', new T.BufferAttribute(new Float32Array(uv),2)); g.setIndex(idx);
+  const c = document.createElement('canvas'); c.width = 8; c.height = 64; const x = c.getContext('2d');
+  const gr2 = x.createLinearGradient(0,64,0,0); gr2.addColorStop(0,'#ffffff'); gr2.addColorStop(.3,'#8a8a8a'); gr2.addColorStop(1,'#000000'); x.fillStyle = gr2; x.fillRect(0,0,8,64);
+  const m = new T.Mesh(g, new T.MeshBasicMaterial({ color:0x000000, transparent:true, opacity:.55, alphaMap:new T.CanvasTexture(c), depthWrite:false, side:T.DoubleSide }));
+  m.renderOrder = 1; mapGrp.add(m);
+}
+// đèn gắn tường + quầng sáng (InstancedMesh: chỉ vài draw call)
+function gLamps(){
+  const L = [];
+  for(const bx of visBoxes){
+    if(bx.pad || bx.o.solid === false || bx.min.y !== 0 || bx.max.y-bx.min.y < 4.4 || bx.max.y >= WALLH) continue;
+    if(bx.color !== MC.wall && bx.color !== MC.wallLite) continue;
+    const w = bx.max.x-bx.min.x, d = bx.max.z-bx.min.z, cx = (bx.min.x+bx.max.x)/2, cz = (bx.min.z+bx.max.z)/2, alongX = w >= d, len = Math.max(w,d);
+    if(len < 5) continue;
+    const n = Math.floor(len/5), col = cx > 3 ? 0xff6a76 : cx < -3 ? 0x40ffe0 : 0xcfe6ff, y = Math.min(bx.max.y-1.0, 3.7);
+    for(let i=0;i<n;i++){ const t = ((i+.5)/n-.5)*len;
+      for(const sg of [1,-1]){ if(alongX) L.push({x:cx+t, y, z:cz+sg*(d/2+.05), ry:sg>0?0:Math.PI, col}); else L.push({x:cx+sg*(w/2+.05), y, z:cz+t, ry:sg>0?Math.PI/2:-Math.PI/2, col}); } }
+  }
+  if(!L.length) return;
+  const lamp = new T.InstancedMesh(new T.BoxGeometry(.7,.16,.09), new T.MeshBasicMaterial({ color:0xffffff }), L.length);
+  const cv = document.createElement('canvas'); cv.width = cv.height = 64; const cx2 = cv.getContext('2d'); const rg = cx2.createRadialGradient(32,32,0,32,32,32);
+  rg.addColorStop(0,'rgba(255,255,255,.9)'); rg.addColorStop(.4,'rgba(255,255,255,.28)'); rg.addColorStop(1,'rgba(255,255,255,0)'); cx2.fillStyle = rg; cx2.fillRect(0,0,64,64);
+  const halo = new T.InstancedMesh(new T.PlaneGeometry(2.6,1.3), new T.MeshBasicMaterial({ map:new T.CanvasTexture(cv), transparent:true, blending:T.AdditiveBlending, depthWrite:false }), L.length);
+  const o = new T.Object3D(), c = new T.Color();
+  L.forEach((l,i)=>{ c.setHex(l.col);
+    o.position.set(l.x,l.y,l.z); o.rotation.set(0,l.ry,0); o.updateMatrix(); lamp.setMatrixAt(i,o.matrix); lamp.setColorAt(i,c);
+    const nx = Math.sin(l.ry), nz = Math.cos(l.ry); o.position.set(l.x+nx*.07, l.y, l.z+nz*.07); o.updateMatrix(); halo.setMatrixAt(i,o.matrix); halo.setColorAt(i,c); });
+  lamp.instanceMatrix.needsUpdate = true; halo.instanceMatrix.needsUpdate = true;
+  if(lamp.instanceColor) lamp.instanceColor.needsUpdate = true; if(halo.instanceColor) halo.instanceColor.needsUpdate = true;
+  mapGrp.add(lamp); mapGrp.add(halo);
 }
 function mapBoxesLow(){
   for(const bx of visBoxes){
@@ -992,7 +1032,7 @@ function mapBoxesHigh(){
   // chữ sơn trên sàn
   gDecal('A', 20, .64, 0, 9, 9, '#ff4655'); gDecal('B', -20, .64, 0, 9, 9, '#00e5c0');
   gDecal('SPAWN A', 0, .52, 27.5, 14, 3.4, '#ff9aa4'); gDecal('SPAWN B', 0, .52, -27.5, 14, 3.4, '#7ff5e3');
-  gDust();
+  gDust(); gAO(); gLamps();
 }
 function buildMapBoxes(){
   if(GFX === 'high'){
@@ -1056,9 +1096,9 @@ const vmGroups = [];
 const VM_HANDS = { vandal:{R:[0,-.115,.05],L:[0,-.055,-.42]}, phantom:{R:[0,-.105,.06],L:[0,-.045,-.34]}, sheriff:{R:[0,-.11,.12],L:null},
                    operator:{R:[0,-.1,.02],L:[0,-.03,-.52]}, spectre:{R:[0,-.11,-.03],L:[0,-.035,-.28]}, knife:{R:[0,-.035,.075],L:null} };
 function vmHand(left){
-  const glove = new T.MeshStandardMaterial({ color:0x171d24, roughness:.7, metalness:.1, flatShading:true });
-  const sleeve = new T.MeshStandardMaterial({ color:0x28323e, roughness:.85, metalness:.05, flatShading:true });
-  const acc = new T.MeshStandardMaterial({ color:left?0x00f5d4:0xff4655, roughness:.5, metalness:.2, emissive:left?0x00f5d4:0xff4655, emissiveIntensity:.35 });
+  const glove = new T.MeshPhongMaterial({ color:0x171d24, shininess:22, specular:0x223, flatShading:true });
+  const sleeve = new T.MeshPhongMaterial({ color:0x28323e, shininess:8, specular:0x111, flatShading:true });
+  const acc = new T.MeshPhongMaterial({ color:left?0x00f5d4:0xff4655, shininess:40, specular:0x555555, emissive:left?0x00f5d4:0xff4655, emissiveIntensity:.3, flatShading:true });
   const h = new T.Group(), sx = left ? -1 : 1;
   const part = (geo, mat, x,y,z, rx=0,ry=0) => { const m = new T.Mesh(geo, mat); m.position.set(x,y,z); m.rotation.set(rx,ry,0); h.add(m); return m; };
   part(new T.BoxGeometry(.078,.07,.11), glove, 0,0,0);
@@ -1071,8 +1111,8 @@ function vmHand(left){
 function upgradeViewmodels(){
   vmGroups.forEach((g,i)=>{
     const w = WEAPONS[i];
-    g.traverse(o=>{ if(o.isMesh && o.material && o.material.isMeshStandardMaterial){
-      o.material.metalness = w.melee ? .3 : (ENV ? .55 : .18); o.material.roughness = .42; o.material.envMapIntensity = .9; } });
+    g.traverse(o=>{ if(o.isMesh && o.material && o.material.isMeshPhongMaterial){
+      o.material.shininess = w.melee ? 90 : 55; o.material.specular.setHex(w.melee ? 0xbbccdd : 0x667788); } });
     const H = VM_HANDS[w.id]; if(!H) return;
     if(H.R){ const hr = vmHand(false); hr.position.set(H.R[0],H.R[1],H.R[2]); g.add(hr); }
     if(H.L){ const hl = vmHand(true); hl.position.set(H.L[0],H.L[1],H.L[2]); g.add(hl); }
@@ -1775,6 +1815,24 @@ window.addEventListener('keydown', e => {
   if(/^Digit[67]$/.test(e.code)) switchWeapon(+e.code.slice(5)-1);
   if(e.code === 'KeyF'){ e.preventDefault(); quickMelee(); }
 });
+// tự kiểm tra: nếu màn hình gần như đen hoàn toàn (lỗi đồ hoạ trên vài máy) -> tự chuyển về đồ hoạ thường (chỉ 1 lần)
+(function gfxWatchdog(){
+  if(GFX !== 'high') return;
+  let frames = 0; const rr = renderer.render.bind(renderer);
+  const darkRatio = () => { try{ const gl = renderer.getContext(), W = gl.drawingBufferWidth, H = gl.drawingBufferHeight, px = new Uint8Array(4); let d = 0, n = 0;
+      for(let i=1;i<=7;i++) for(let j=1;j<=5;j++){ gl.readPixels((W*i/8)|0, (H*j/6)|0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); n++; if(px[0]+px[1]+px[2] < 30) d++; }
+      return d/n; }catch(e){ return 0; } };
+  let last = performance.now(), acc = 0, cnt = 0, stage = 0;
+  renderer.render = function(s, c){ rr(s, c); if(s !== scene) return; frames++;
+    // tự giảm tải nếu máy yếu (<28 FPS): bước 1 giảm độ phân giải + bỏ lọc màu, bước 2 giảm bóng đổ
+    const now = performance.now(), dt = now-last; last = now; if(dt < 250){ acc += dt; cnt++; }
+    if(cnt >= 150){ const fps = 1000/(acc/cnt); acc = 0; cnt = 0;
+      if(frames > 400 && fps < 28 && stage < 2){ stage++;
+        if(stage === 1){ renderer.setPixelRatio(1); renderer.setSize(innerWidth, innerHeight); canvas.style.filter = ''; }
+        else { try{ if(sun.shadow.map){ sun.shadow.map.dispose(); sun.shadow.map = null; } sun.shadow.mapSize.set(1024,1024); }catch(e){} } } }
+    if(frames===60 || frames===240 || frames===900){ if(darkRatio() > .6){ try{ if(!sessionStorage.getItem('ir_gfx_retry')){ sessionStorage.setItem('ir_gfx_retry','1'); localStorage.setItem('ir_gfx','low'); location.reload(); } }catch(e){} } } };
+})();
+if(GFX === 'high') canvas.style.filter = 'contrast(1.06) saturate(1.12)';
 // nút đổi chất lượng đồ hoạ trong menu
 (function gfxButton(){
   const cb = document.getElementById('copyb'); if(!cb || !cb.parentNode) return;
